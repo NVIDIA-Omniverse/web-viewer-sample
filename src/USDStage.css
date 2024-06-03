@@ -1,0 +1,121 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-NvidiaProprietary
+ *
+ * NVIDIA CORPORATION, its affiliates and licensors retain all intellectual
+ * property and proprietary rights in and to this material, related
+ * documentation and any modifications thereto. Any use, reproduction,
+ * disclosure or distribution of this material and related documentation
+ * without an express license agreement from NVIDIA CORPORATION or
+ * its affiliates is strictly prohibited.
+ */
+.usdStageContainer {
+    position: absolute;
+    top: 155px;
+    right: 0;
+    height: calc(100% - 185px);
+    background-color: #FEFEFE;
+    color: #656565;
+    text-align: left;
+    overflow: hidden; /* Ensures no overflow outside this container */
+}
+
+.usdStageHeader {
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-top: 15px;
+    font-size: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.list-container {
+    max-height: calc(100% - 60px); /* Adjust based on header and any other UI elements */
+    overflow-y: auto; /* Enables vertical scrolling */
+    scrollbar-color: #76b900 #e0e0e0; /* For Firefox, thumb and track colors */
+    padding-inline-start: 30px;
+    padding-right: 30px;
+}
+
+.list-container::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+.list-container::-webkit-scrollbar-track {
+    background: #e0e0e0; /* Light grey background */
+}
+
+.list-container::-webkit-scrollbar-thumb {
+    background-color: #76b900; /* NVIDIA green */
+    border-radius: 10px; /* Rounded corners on the scrollbar thumb */
+    border: 2px solid #e0e0e0; /* Optional: adds a border around the thumb */
+}
+
+.list-container::-webkit-scrollbar-button {
+    display: none; /* Hides the default buttons, optional */
+}
+
+.list-item {
+    cursor: pointer;
+    color: #000000;
+    list-style-type: none; /* Custom style or none */
+    padding-right: 0px; /* Add padding to ensure right alignment */
+}
+
+.list-item.parent::before {
+    float: left;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.nested-list {
+    padding-left: 20px; /* Indentation for child lists */
+    margin: 0; /* Remove any default margins */
+    padding-right: 0; /* Ensure padding is consistent on right */
+}
+
+.item-content {
+    padding: 5px 0px 5px 5px;
+    line-height: 1; /* Adjust line height as needed */
+    display: flex;
+    align-items: center;
+}
+
+.item-content.selected {
+    background-color: #76b900; /* NVIDIA green */
+    color: #ffffff; /* White text color */
+}
+
+.expand-toggle {
+    cursor: pointer;
+    padding-right: 8px;  // Provides space to click
+    user-select: none;  // Prevents text selection on click
+    display: inline-block;  // Ensures alignment with text
+}
+
+.expand-toggle.deselected {
+    color: #76b900;
+}
+
+.expand-toggle.selected {
+    color: #FFFFFF;
+}
+
+.usdStageButton {
+    font-size: 14px;
+    margin-top: 6px; /* Space above the button */
+    padding: 4px 8px; /* Padding inside the button */
+    background-color: #76b900; /* NVIDIA green, or another color */
+    color: white; /* Text color */
+    border: solid;
+    border-color: #76b900;
+    border-width: 2px;
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.usdStageButton:hover {
+    background-color: #ffffff; /* Darker green on hover */
+    color: black;
+    border-color: #76b900;
+}

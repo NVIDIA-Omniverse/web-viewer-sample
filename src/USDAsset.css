@@ -1,0 +1,47 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+ * SPDX-License-Identifier: LicenseRef-NvidiaProprietary
+ *
+ * NVIDIA CORPORATION, its affiliates and licensors retain all intellectual
+ * property and proprietary rights in and to this material, related
+ * documentation and any modifications thereto. Any use, reproduction,
+ * disclosure or distribution of this material and related documentation
+ * without an express license agreement from NVIDIA CORPORATION or
+ * its affiliates is strictly prohibited.
+ */
+.usdAssetContainer {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 100%; /* This will be controlled by React prop */
+    height: 155px;
+    background-color: #FEFEFE;
+    color: #656565;
+    text-align: left;
+}
+
+.usdAssetHeader {
+    margin-left: 30px;
+    margin-top: 15px;
+    font-size: 25px;
+}
+
+.usdAssetSelectorContainer {
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-top: 10px;
+}
+
+.usdAssetSelector {
+    width: 100%;
+    background-color: #76b900; /* NVIDIA green */
+    color: #ffffff; /* White text */
+    font-size: 16px; /* Adjust font size as needed */
+    border: none;
+    height: 30px;
+}
+
+.usdAssetOption {
+    background-color: #FEFEFE; /* Light background for options */
+    color: #000000; /* Dark text for options */
+}
