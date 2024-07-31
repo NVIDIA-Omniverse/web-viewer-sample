@@ -14,6 +14,7 @@ import React from "react";
 import './USDAsset.css';
 
 interface USDAssetProps {
+    gfnUser: string;
     width: number;
     usdAssets: { name: string; url: string }[];
     selectedAssetUrl?: string;
@@ -21,6 +22,7 @@ interface USDAssetProps {
 }
 
 interface USDAssetState {
+    gfnUser: string
     selectedUSDAssetIndex: number | null;
 }
 
@@ -29,6 +31,7 @@ export default class USDAsset extends React.Component<USDAssetProps, USDAssetSta
         super(props);
         // Initialize state with the index of the asset matching the initial URL if provided
         this.state = {
+            gfnUser: props.gfnUser,
             selectedUSDAssetIndex: this._findAssetIndexByUrl(props.selectedAssetUrl)
         };
     }
@@ -69,37 +72,37 @@ export default class USDAsset extends React.Component<USDAssetProps, USDAssetSta
         return this.props.usdAssets.findIndex(asset => asset.url === url);
     }
     
-    /**
-    * @function _renderSelector
-    *
-    * Render the selector.
-    */
-    private _renderSelector (): JSX.Element {
-          const options = this.props.usdAssets.map((asset, index) => (
-              <option key={index} value={index} className="usdAssetOption">
-                  {asset.name}
-              </option>
-          ));
+    // /**
+    // * @function _renderSelector
+    // *
+    // * Render the selector.
+    // */
+    // private _renderSelector (): JSX.Element {
+    //       const options = this.props.usdAssets.map((asset, index) => (
+    //           <option key={index} value={index} className="usdAssetOption">
+    //               {asset.name}
+    //           </option>
+    //       ));
 
-          return (
-              <select
-                  className="usdAssetSelector"
-                  onChange={this._handleSelectChange}
-                  value={this.state.selectedUSDAssetIndex || ''}>
-                  {options}
-              </select>
-          );
-    }
+    //       return (
+    //           <select
+    //               className="usdAssetSelector"
+    //               onChange={this._handleSelectChange}
+    //               value={this.state.selectedUSDAssetIndex || ''}>
+    //               {options}
+    //           </select>
+    //       );
+    // }
     
     render() {
           return (
               <div className="usdAssetContainer" style={{ width: this.props.width }}>
                   <div className="usdAssetHeader">
-                      {'USD Asset'}
+                      GFN User: {this.state.gfnUser}
                   </div>
-                  <div className="usdAssetSelectorContainer">
+                  {/* <div className="usdAssetSelectorContainer">
                       {this._renderSelector()}
-                  </div>
+                  </div> */}
               </div>
           );
     }

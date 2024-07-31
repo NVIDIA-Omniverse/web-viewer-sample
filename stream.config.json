@@ -8,7 +8,7 @@
         "cmsId": 1
     },
     "local": {
-        "$comment": "Required props if source is set to 'local'.",
+        "$comment": "Required props if source is set to 'local'. Azure host: 10.112.208.155",        
         "server": "127.0.0.1"
     }
 }

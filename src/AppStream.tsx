@@ -9,8 +9,8 @@
  * without an express license agreement from NVIDIA CORPORATION or
  * its affiliates is strictly prohibited.
  */
-
 import React from "react";
+// @ts-ignore
 import { AppStreamer } from '@nvidia/omniverse-webrtc-streaming-library';
 import './AppStream.css';
 

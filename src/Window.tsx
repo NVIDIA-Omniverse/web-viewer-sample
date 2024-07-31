@@ -13,9 +13,10 @@ import React from 'react';
 import './Window.css';
 import AppStream from './AppStream'; // Ensure .tsx extension if needed
 import StreamConfig from '../stream.config.json';
-import USDAsset from "./USDAsset";
-import USDStage from "./USDStage";
+// import USDAsset from "./USDAsset";
+// import USDStage from "./USDStage";
 import LogoImage from './assets/nvidia_logo.png';
+import { Link } from 'react-router-dom';
 
 interface USDAssetType {
     name: string;
@@ -47,7 +48,7 @@ interface AppStreamMessageType {
 
 export default class App extends React.Component<{}, AppState> {
     
-    private usdStageRef = React.createRef<USDStage>();
+    // private usdStageRef = React.createRef<USDStage>();
     
     constructor(props: {}) {
         super(props);
@@ -87,39 +88,39 @@ export default class App extends React.Component<{}, AppState> {
     * Send a request to open an asset when stream has started.
     */
     private _onStreamStarted (): void {
-        this._openSelectedAsset();
+        //this._openSelectedAsset();
     }
 
-    /**
-    * @function _openSelectedAsset
-    *
-    * Send a request to load an asset.
-    */
-    private _openSelectedAsset (): void {
-        this._toggleLoadingState(true);
-        this.setState({ usdPrims: [], selectedUSDPrims: new Set<USDPrimType>() });
-        this.usdStageRef.current?.resetExpandedIds();
-        console.log(`Sending request to open asset: ${this.state.selectedUSDAsset.url}.`);
-        const message: AppStreamMessageType = {
-            event_type: "openStageRequest",
-            payload: {
-                url: this.state.selectedUSDAsset.url
-            }
-        };
-        AppStream.sendMessage(JSON.stringify(message));
-    }
+    // /**
+    // * @function _openSelectedAsset
+    // *
+    // * Send a request to load an asset.
+    // */
+    // private _openSelectedAsset (): void {
+    //     this._toggleLoadingState(true);
+    //     this.setState({ usdPrims: [], selectedUSDPrims: new Set<USDPrimType>() });
+    //     this.usdStageRef.current?.resetExpandedIds();
+    //     console.log(`Sending request to open asset: ${this.state.selectedUSDAsset.url}.`);
+    //     const message: AppStreamMessageType = {
+    //         event_type: "openStageRequest",
+    //         payload: {
+    //             url: this.state.selectedUSDAsset.url
+    //         }
+    //     };
+    //     AppStream.sendMessage(JSON.stringify(message));
+    // }
 
-    /**
-    * @function _onSelectUSDAsset
-    *
-    * React to user selecting an asset in the USDAsset selector.
-    */
-    private _onSelectUSDAsset (usdAsset: USDAssetType): void {
-        console.log(`Asset selected: ${usdAsset.name}.`);
-        this.setState({ selectedUSDAsset: usdAsset }, () => {
-            this._openSelectedAsset();
-        });
-    }
+    // /**
+    // * @function _onSelectUSDAsset
+    // *
+    // * React to user selecting an asset in the USDAsset selector.
+    // */
+    // private _onSelectUSDAsset (usdAsset: USDAssetType): void {
+    //     console.log(`Asset selected: ${usdAsset.name}.`);
+    //     this.setState({ selectedUSDAsset: usdAsset }, () => {
+    //         this._openSelectedAsset();
+    //     });
+    // }
     
     /**
     * @function _getChildren
@@ -156,62 +157,62 @@ export default class App extends React.Component<{}, AppState> {
         AppStream.sendMessage(JSON.stringify(message));
     }
 
-    /**
-    * @function _onSelectUSDPrims
-    *
-    * React to user selecting items in the USDStage list.
-    * Sends a request to change the selection in the USD Stage.
-    */
-    private _onSelectUSDPrims (selectedUsdPrims: Set<USDPrimType>): void {
-        console.log(`Sending request to select: ${selectedUsdPrims}.`);
-        this.setState({ selectedUSDPrims: selectedUsdPrims });
-        const paths: string[] = Array.from(selectedUsdPrims).map(obj => obj.path);
-        const message: AppStreamMessageType = {
-            event_type: "selectPrimsRequest",
-            payload: {
-                paths: paths
-            }
-        };
-        AppStream.sendMessage(JSON.stringify(message));
+    // /**
+    // * @function _onSelectUSDPrims
+    // *
+    // * React to user selecting items in the USDStage list.
+    // * Sends a request to change the selection in the USD Stage.
+    // */
+    // private _onSelectUSDPrims (selectedUsdPrims: Set<USDPrimType>): void {
+    //     console.log(`Sending request to select: ${selectedUsdPrims}.`);
+    //     this.setState({ selectedUSDPrims: selectedUsdPrims });
+    //     const paths: string[] = Array.from(selectedUsdPrims).map(obj => obj.path);
+    //     const message: AppStreamMessageType = {
+    //         event_type: "selectPrimsRequest",
+    //         payload: {
+    //             paths: paths
+    //         }
+    //     };
+    //     AppStream.sendMessage(JSON.stringify(message));
 
-        selectedUsdPrims.forEach(usdPrim => {this._onFillUSDPrim(usdPrim)});
-    }
+    //     selectedUsdPrims.forEach(usdPrim => {this._onFillUSDPrim(usdPrim)});
+    // }
 
-    /**
-    * @function _onStageReset
-    *
-    * Clears the selection and sends a request to reset the stage to how it was at the time it loaded.
-    */
-    private _onStageReset (): void {
-        this.setState({ selectedUSDPrims: new Set<USDPrimType>() });
-        const selection_message: AppStreamMessageType = {
-            event_type: "selectPrimsRequest",
-            payload: {
-                paths: []
-            }
-        };
-        AppStream.sendMessage(JSON.stringify(selection_message));
+    // /**
+    // * @function _onStageReset
+    // *
+    // * Clears the selection and sends a request to reset the stage to how it was at the time it loaded.
+    // */
+    // private _onStageReset (): void {
+    //     this.setState({ selectedUSDPrims: new Set<USDPrimType>() });
+    //     const selection_message: AppStreamMessageType = {
+    //         event_type: "selectPrimsRequest",
+    //         payload: {
+    //             paths: []
+    //         }
+    //     };
+    //     AppStream.sendMessage(JSON.stringify(selection_message));
 
-        const reset_message: AppStreamMessageType = {
-            event_type: "resetStage",
-            payload: {}
-        };
-        AppStream.sendMessage(JSON.stringify(reset_message));
-    }
+    //     const reset_message: AppStreamMessageType = {
+    //         event_type: "resetStage",
+    //         payload: {}
+    //     };
+    //     AppStream.sendMessage(JSON.stringify(reset_message));
+    // }
 
-    /**
-    * @function _onFillUSDPrim
-    *
-    * If the usdPrim has a children property a request is sent for its children.
-    * When the streaming app sends an empty children value it is not an array.
-    * When a prim does not have children the streaming app does not provide a children
-    * property to being with.
-    */
-    private _onFillUSDPrim (usdPrim: USDPrimType): void {
-        if (usdPrim !== null && "children" in usdPrim && !Array.isArray(usdPrim.children)) {
-            this._getChildren(usdPrim);
-        }
-    }
+    // /**
+    // * @function _onFillUSDPrim
+    // *
+    // * If the usdPrim has a children property a request is sent for its children.
+    // * When the streaming app sends an empty children value it is not an array.
+    // * When a prim does not have children the streaming app does not provide a children
+    // * property to being with.
+    // */
+    // private _onFillUSDPrim (usdPrim: USDPrimType): void {
+    //     if (usdPrim !== null && "children" in usdPrim && !Array.isArray(usdPrim.children)) {
+    //         this._getChildren(usdPrim);
+    //     }
+    // }
     
     /**
     * @function _findUSDPrimByPath
@@ -332,7 +333,7 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     render() {
-        const sidebarWidth = 300;
+        const sidebarWidth = 0; //300;
         const headerHeight = 60;
         const streamConfig: any = StreamConfig.source === 'gfn' ? {
             ...StreamConfig[StreamConfig.source],
@@ -359,10 +360,11 @@ export default class App extends React.Component<{}, AppState> {
             {/* Header */}
             <div className="header-bar">
             <img src={LogoImage} alt="Logo" className="header-logo" />
-            <span className="header-title">Omniverse Embedded Web Viewer Example</span>
+            <span className="header-title">Aerial Omniverse Digital Twin</span>
+            <Link to="/nucleus">Go to Nucleus</Link>
             </div>
             
-            {/* Show progress indicator based on isLoadingAsset state */}
+            {/* Show progress indicator based on isLoadingAsset state 
             {this.state.isLoadingAsset &&
                 <div
                     className="progress-indicator-container"
@@ -379,7 +381,8 @@ export default class App extends React.Component<{}, AppState> {
                         <div>File: {this.state.loadingActivity}</div>
                     </div>
                 </div>
-            }
+            }*/}
+            
 
                 {/* Streamed app */}
                 <AppStream
@@ -399,16 +402,16 @@ export default class App extends React.Component<{}, AppState> {
                     handleCustomEvent={(event) => this._handleCustomEvent(event)}
                 />
 
-                {this.state.gfnUser &&
+                {/*this.state.gfnUser &&
                     <>
-                    {/* USD Asset Selector */}
+                    {/* USD Asset Selector * /}
                     <USDAsset
                         usdAssets={this.state.usdAssets}
                         selectedAssetUrl={this.state.selectedUSDAsset?.url}
                         onSelectUSDAsset={(value) => this._onSelectUSDAsset(value)}
                         width={sidebarWidth}
                     />
-                    {/* USD Stage Listing */}
+                    {/* USD Stage Listing * /}
                     <USDStage
                         ref={this.usdStageRef}
                         width={sidebarWidth}
@@ -419,7 +422,7 @@ export default class App extends React.Component<{}, AppState> {
                         onReset={() => this._onStageReset()}
                     />
                     </>
-                }
+                */}
                 </div>
             );
         }

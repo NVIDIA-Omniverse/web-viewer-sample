@@ -27,13 +27,17 @@
     },
     "dependencies": {
         "@nvidia/omniverse-webrtc-streaming-library": "^2.1.9",
+        "@types/react-router-dom": "^5.3.3",
+        "https-proxy-agent": "^7.0.5",
         "prop-types": "^15.8.1",
         "react": "^18.2.0",
         "react-bootstrap": "^2.9.1",
         "react-dom": "^18.2.0",
+        "react-router-dom": "^6.25.1",
         "vite-plugin-externals": "^0.6.2"
     },
     "devDependencies": {
+        "@types/node": "^20.14.10",
         "@types/react": "^18.2.43",
         "@types/react-dom": "^18.2.17",
         "@typescript-eslint/eslint-plugin": "^6.14.0",

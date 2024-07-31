@@ -11,10 +11,8 @@
  */
 .usdAssetContainer {
     position: absolute;
-    top: 60px;
     right: 0;
     width: 100%; /* This will be controlled by React prop */
-    height: 155px;
     background-color: #FEFEFE;
     color: #656565;
     text-align: left;

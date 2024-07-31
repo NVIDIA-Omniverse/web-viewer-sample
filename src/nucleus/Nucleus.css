@@ -1,0 +1,91 @@
+/**
+ * Copyright (c) 2022, NVIDIA CORPORATION.  All rights reserved.
+ *
+ * NVIDIA CORPORATION and its licensors retain all intellectual property
+ * and proprietary rights in and to this software, related documentation
+ * and any modifications thereto.  Any use, reproduction, disclosure or
+ * distribution of this software and related documentation without an express
+ * license agreement from NVIDIA CORPORATION is strictly prohibited.
+ */
+
+:root {
+    --nvidia-green: 118 185 0;
+    --nvidia-green-dark: rgb(105 163 3);
+}
+
+/**
+ * Bootstrap spinners CSS variable overrides.
+ */
+.spinner-border-sm {
+    --bs-spinner-border-width: 0.15rem;
+    --bs-spinner-width: 1.2rem;
+    --bs-spinner-height: 1.2rem;
+}
+
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+
+.btn {
+    border-radius: 0.1rem;
+    text-transform: uppercase;
+}
+
+.btn-primary {
+    --bs-btn-bg: rgb(var(--nvidia-green));
+    --bs-btn-border-color: rgb(var(--nvidia-green));
+    --bs-btn-hover-bg: var(--nvidia-green-dark);
+    --bs-btn-hover-border-color: var(--nvidia-green-dark);
+    --bs-btn-active-bg: var(--nvidia-green-dark);
+    --bs-btn-active-border-color: var(--nvidia-green-dark);
+    --bs-btn-disabled-bg: rgb(var(--nvidia-green));
+    --bs-btn-disabled-border-color: rgb(var(--nvidia-green));
+}
+
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+}
+
+.form-signin a:hover {
+    text-decoration: none;
+}
+
+.form-signin .form-floating:focus-within {
+    z-index: 2;
+}
+
+.form-signin input[type="text"] {
+    margin-bottom: -1px;
+}
+
+#floatingServer {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+#floatingUsername {
+    border-radius: 0;
+}
+
+.form-signin input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.form-control:focus {
+    border-color: rgb(var(--nvidia-green));
+    box-shadow: 0 0 0 0.25rem rgb(var(--nvidia-green) / 75%);
+}

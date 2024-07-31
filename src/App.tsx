@@ -10,11 +10,21 @@
  * its affiliates is strictly prohibited.
  */
 
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Window from './Window';
+import Nucleus from './nucleus/Nucleus';
 
-function App() {
-    return <Window />
+const App: React.FC = () => {
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<Window />} />
+                <Route path="/nucleus" element={<Nucleus />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;
