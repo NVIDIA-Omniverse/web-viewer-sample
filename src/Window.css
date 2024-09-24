@@ -9,7 +9,7 @@
  * without an express license agreement from NVIDIA CORPORATION or
  * its affiliates is strictly prohibited.
  */
-.progress-indicator-container {
+.loading-indicator-container {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -19,9 +19,10 @@
     justify-content: flex-start;
     align-items: flex-start;
     z-index: 9999; /* Ensure it appears on top of other elements */
+    text-align: center;
 }
 
-.progress-indicator-label {
+.loading-indicator-label {
     margin-top: 50px;
     padding-bottom: 25px;
     padding-left: 50px;
@@ -33,7 +34,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: flex-start;
+    align-items: center;
     font-weight: bold;
 }
 
