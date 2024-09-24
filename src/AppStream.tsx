@@ -11,12 +11,19 @@
  */
 
 import React from "react";
-import { AppStreamer } from '@nvidia/omniverse-webrtc-streaming-library';
+import { AppStreamer, RagnarokConfig, GFNConfig, StreamEvent } from '@nvidia/omniverse-webrtc-streaming-library';
 import './AppStream.css';
 
 interface StreamConfig {
     source: 'gfn' | 'local';
-    server?: string;
+    gfn: {
+        catalogClientId: string,
+        clientId: string,
+        cmsId: number
+    },
+    local: {
+        server: string
+    }
 }
 
 interface AppStreamProps {
@@ -45,50 +52,71 @@ export default class AppStream extends React.Component<AppStreamProps, AppStream
     }
 
     componentDidMount() {
-      if (!this._requested) {
-          this._requested = true;
+        if (!this._requested) {
+            this._requested = true;
 
-          let streamConfig: any = {};
+            let streamConfig: GFNConfig | RagnarokConfig;
 
-          if (this.props.streamConfig.source === 'gfn') {
-              streamConfig = this.props.streamConfig;
-          }
-          if (this.props.streamConfig.source === 'local') {
-              this.props.onLoggedIn('localUser');
+            if (this.props.streamConfig.source === 'gfn') {
+                streamConfig = {
+                    source: 'gfn',
+                    //@ts-ignore
+                    GFN: GFN,
+                    catalogClientId: this.props.streamConfig.gfn.catalogClientId,
+                    clientId: this.props.streamConfig.gfn.clientId,
+                    cmsId: this.props.streamConfig.gfn.cmsId,
+                };
+            }
+            else if (this.props.streamConfig.source === 'local') {
+                const server = this.props.streamConfig.local.server;
+                const width = 1920;
+                const height = 1080;
+                const fps = 60;
+                const url = `server=${server}&resolution=${width}:${height}&fps=${fps}&mic=0&cursor=free&autolaunch=true`;
 
-              const server = this.props.streamConfig.server;
-              const width = 1920;
-              const height = 1080;
-              const fps = 60;
-              const url = `server=${server}&resolution=${width}:${height}&fps=${fps}&mic=0&cursor=free&autolaunch=true`;
+                streamConfig = {
+                    source: 'local',
+                    videoElementId: 'remote-video',
+                    audioElementId: 'remote-audio',
+                    messageElementId: 'message-display',
+                    urlLocation: {search: url}
+                };
+            }
+            else {
+                return;
+            }
 
-              streamConfig = {
-                  source: 'local',
-                  videoElementId: 'remote-video',
-                  audioElementId: 'remote-audio',
-                  messageElementId: 'message-display',
-                  urlLocation: { search: url }
-              };
+            try {
+                AppStreamer.setup({
+                    streamConfig: streamConfig,
+                    onUpdate: (message: StreamEvent) => this._onUpdate(message),
+                    onStart: (message: StreamEvent) => this._onStart(message),
+                    onCustomEvent: (message: any) => this._onCustomEvent(message),
+                    authenticate: false,
+                    nativeTouchEvents: true,
+                    doReconnect: true,
+                    onStop: function (message: StreamEvent): void {
+                        console.log(message);
+                    },
+                    onTerminate: function (message: StreamEvent): void {
+                        console.log(message);
+                    },
+                    onISSOUpdate: function (message: StreamEvent): void {
+                        console.log(message);
+                    }
+
+                })
+                .then((result: StreamEvent) => {
+                    console.info(result);
+                })
+                .catch((error: StreamEvent) => {
+                    console.error(error);
+                });
+            }
+            catch (error) {
+                console.error(error);
+            }
         }
-
-        try {
-          AppStreamer.setup({
-              streamConfig: streamConfig,
-              onUpdate: (message: any) => this._onUpdate(message),
-              onStart: (message: any) => this._onStart(message),
-              onCustomEvent: (message: any) => this._onCustomEvent(message)
-          })
-          .then((result: any) => {
-              console.info(result);
-          })
-          .catch((error: any) => {
-              console.error(error);
-          });
-        }
-        catch (error) {
-            console.error(error);
-        }
-      }
     }
 
     componentDidUpdate(_prevProps: AppStreamProps, prevState: AppStreamState) {
@@ -105,11 +133,11 @@ export default class AppStream extends React.Component<AppStreamProps, AppStream
       }
     }
 
-    static sendMessage(message: string, storeSelection?: boolean) {
-        AppStreamer.sendMessage(message, storeSelection);
+    static sendMessage(message: string) {
+        AppStreamer.sendMessage(message);
     }
 
-    private _onStart(message: any) {
+    private _onStart(message: StreamEvent) {
         if (message.action === 'start' && message.status === 'success' && !this.state.streamReady) {
             console.info('streamReady');
             this.setState({ streamReady: true });
@@ -119,10 +147,15 @@ export default class AppStream extends React.Component<AppStreamProps, AppStream
         console.debug(message);
     }
 
-    private _onUpdate(message: any) {
+    private _onUpdate(message: StreamEvent) {
         try {
             if (message.action === 'authUser' && message.status === 'success') {
-                this.props.onLoggedIn(message.info);
+                if (typeof message.info === "string") {
+                    this.props.onLoggedIn(message.info);
+                }
+                else {
+                    throw new Error("Not implemented.");
+                }
             }
         }
         catch (error) {
@@ -130,18 +163,13 @@ export default class AppStream extends React.Component<AppStreamProps, AppStream
         }
     }
 
+    /**
+    * @function _onCustomEvent
+    *
+    * Propagate message to parent component.
+    */
     private _onCustomEvent(message: any) {
         this.props.handleCustomEvent(message);
-    }
-
-    //@ts-ignore
-    private _onFocus() {
-        console.log("FOCUS");
-    }
-
-    //@ts-ignore
-    private _onBlur() {
-        console.log("BLUR");
     }
 
     render() {

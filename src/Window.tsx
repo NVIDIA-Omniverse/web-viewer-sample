@@ -17,6 +17,7 @@ import USDAsset from "./USDAsset";
 import USDStage from "./USDStage";
 import LogoImage from './assets/nvidia_logo.png';
 
+
 interface USDAssetType {
     name: string;
     url: string;
@@ -29,15 +30,14 @@ interface USDPrimType {
 }
 
 interface AppState {
-    gfnUser: string | null;
-    streamReady: boolean;
     usdAssets: USDAssetType[];
     selectedUSDAsset: USDAssetType;
     usdPrims: USDPrimType[];
     selectedUSDPrims: Set<USDPrimType>;
-    isLoadingAsset: boolean;
-    loadingProgress: number;
-    loadingActivity: string;
+    isKitReady: boolean;
+    showStream: boolean;
+    showUI: boolean;
+    loadingText: string;
 }
 
 interface AppStreamMessageType {
@@ -52,51 +52,90 @@ export default class App extends React.Component<{}, AppState> {
     constructor(props: {}) {
         super(props);
         
+        // list of selectable USD assets
         const usdAssets: USDAssetType[] = [
             {name: "Sample 1", url:"./samples/stage01.usd"},
             {name: "Sample 2", url:"./samples/stage02.usd"},
         ];
         
         this.state = {
-            gfnUser: null,
-            streamReady: false,
             usdAssets: usdAssets,
             selectedUSDAsset: usdAssets[0],
             usdPrims: [],
             selectedUSDPrims: new Set<USDPrimType>(),
-            isLoadingAsset: false,
-            loadingProgress: 0,
-            loadingActivity: ""
+            isKitReady: false,
+            showStream: false,
+            showUI: false,
+            loadingText: StreamConfig.source === "gfn"? "Log in to GeForce NOW to view stream" : "Waiting for stream to begin"
         }
     }
-    
+
     /**
-    * @function _toggleLoadingState
+    * @function _queryLoadingState
     *
-    * Toggle state of loading asset indicator.
+    * Sends Kit a message to find out what the loading state is.
+    * Receives a 'loadingStateResponse' event type
     */
-    private _toggleLoadingState (isLoading: boolean): void {
-        console.log(`Setting loading indicator visibility to: ${isLoading ? "visible" : "hidden"}.`);
-        this.setState({ loadingProgress: 0 });
-        this.setState({ isLoadingAsset: isLoading });
+    private _queryLoadingState(): void {
+        const message: AppStreamMessageType = {
+            event_type: "loadingStateQuery",
+            payload: {}
+        };
+        AppStream.sendMessage(JSON.stringify(message));
+    }
+
+    /**
+    * @function _pollForKitReady
+    *
+    * Attempts to query Kit's loading state until a response is received.
+    * Once received, the 'isKitReady' flag is set to true and polling ends
+    */
+    async _pollForKitReady() {
+        if (this.state.isKitReady === true) return
+
+        console.info("polling Kit availability")
+        this._queryLoadingState()
+        setTimeout(() => this._pollForKitReady(), 3000); // Poll every 3 seconds
     }
     
     /**
-    * @function _onStreamStarted
+     * @function _getAsset
+     * 
+     * Attempts to retrieve an asset from the list of USD assets based on a supplied USD path
+     * If a match is not found, a USDAssetType with empty values is returned.
+     */
+    private _getAsset(path: string): USDAssetType {
+        if (!path)
+            return {name: "", url: ""}
+        
+        // returns the file name from a path
+        const getFileNameFromPath = (path: string): string | undefined => path.split(/[/\\]/).pop();
+
+        for (const asset of this.state.usdAssets) {
+            if (getFileNameFromPath(asset.url) === getFileNameFromPath(path))
+                return asset
+        }
+        
+        return {name: "", url: ""}
+    }
+
+    /**
+    * @function _onLoggedIn
     *
-    * Send a request to open an asset when stream has started.
+    * Runs when the user logs in
     */
-    private _onStreamStarted (): void {
-        this._openSelectedAsset();
+    private _onLoggedIn(userId: string): void {
+        console.info(`Logged in to GeForce NOW as ${userId}`)
+        this.setState({ loadingText: "Waiting for stream to begin"})
     }
 
     /**
     * @function _openSelectedAsset
     *
-    * Send a request to load an asset.
+    * Send a request to load an asset based on the currently selected asset
     */
-    private _openSelectedAsset (): void {
-        this._toggleLoadingState(true);
+    private _openSelectedAsset(): void {
+        this.setState({ loadingText: "Loading Asset...", showStream: false })
         this.setState({ usdPrims: [], selectedUSDPrims: new Set<USDPrimType>() });
         this.usdStageRef.current?.resetExpandedIds();
         console.log(`Sending request to open asset: ${this.state.selectedUSDAsset.url}.`);
@@ -125,6 +164,7 @@ export default class App extends React.Component<{}, AppState> {
     * @function _getChildren
     *
     * Send a request for the child prims of the given usdPrim.
+    * Note that a filter is supported.
     */
     private _getChildren (usdPrim: USDPrimType | null = null): void {
         // Get geometry prims. If no usdPrim is specified then get children of /World.
@@ -140,9 +180,10 @@ export default class App extends React.Component<{}, AppState> {
     }
 
     /**
-    * @function _getChildren
+    * @function _makePickable
     *
-    * Send a request for the child prims of the given usdPrim.
+    * Send a request to make prims pickable/selectable.
+    * By default the client requests to make only a handful of the prims selectable - leaving the background items unselectable.
     */
     private _makePickable (usdPrims: USDPrimType[]): void {
         const paths: string[] = usdPrims.map(prim => prim.path);
@@ -205,7 +246,7 @@ export default class App extends React.Component<{}, AppState> {
     * If the usdPrim has a children property a request is sent for its children.
     * When the streaming app sends an empty children value it is not an array.
     * When a prim does not have children the streaming app does not provide a children
-    * property to being with.
+    * property to begin with.
     */
     private _onFillUSDPrim (usdPrim: USDPrimType): void {
         if (usdPrim !== null && "children" in usdPrim && !Array.isArray(usdPrim.children)) {
@@ -244,33 +285,71 @@ export default class App extends React.Component<{}, AppState> {
         if (!event) {
             return;
         }
-        // Streamed app notification of asset loaded.
+
+        // response received once a USD asset is fully loaded
         if (event.event_type === "openedStageResult") {
             if (event.payload.result === "success") {
+                this._queryLoadingState() 
                 console.log('Kit App communicates an asset was loaded: ' + event.payload.url);
                 this._getChildren(null); // Hide progress indicator
             }
             else {
                 console.error('Kit App communicates there was an error loading: ' + event.payload.url);
-                this._toggleLoadingState(false); // Hide progress indicator
             }
         }
-        // Progress amount notification.
+        
+        // response received from the 'loadingStateQuery' request
+        else if (event.event_type == "loadingStateResponse") {
+            // loadingStateRequest is used to poll Kit for proof of life.
+            // For the first loadingStateResponse we set isKitReady to true
+            // and run one more query to find out what the current loading state
+            // is in Kit
+            if (this.state.isKitReady === false) {
+                console.info("Kit is ready to load assets")
+                this.setState({ isKitReady: true })
+                this._queryLoadingState()
+            }
+            
+            else {
+                const usdAsset: USDAssetType = this._getAsset(event.payload.url)
+                const isStageValid: boolean = !!(usdAsset.name && usdAsset.url)
+                
+                // set the USD Asset dropdown to the currently opened stage if it doesn't match
+                if (isStageValid && usdAsset !== undefined && this.state.selectedUSDAsset !== usdAsset)
+                    this.setState({ selectedUSDAsset: usdAsset })
+
+                // if the stage is empty, force-load the selected usd asset; the loading state is irrelevant
+                if (!event.payload.url)
+                    this._openSelectedAsset()
+                
+                // if a stage has been fully loaded and isn't a part of this application, force-load the selected stage
+                else if (!isStageValid && event.payload.loading_state === "idle"){
+                    console.log(`The loaded asset ${event.payload.url} is invalid.`)
+                    this._openSelectedAsset()
+                }
+                
+                // show stream and populate children if the stage is valid and it's done loading
+                if (isStageValid && event.payload.loading_state === "idle")
+                {
+                    this._getChildren()
+                    this.setState({ showStream: true, loadingText: "Asset loaded", showUI: true })
+                }
+            }
+        }
+        
+        // Loading progress amount notification.
         else if (event.event_type === "updateProgressAmount") {
             console.log('Kit App communicates progress amount.');
-            console.log(event.payload);
-            const progress = Math.round(Number(event.payload.progress) * 100.0);
-            if (progress > 0) {
-                this.setState({ loadingProgress: progress });
-            }
         }
-        // Progress activity notification.
+            
+        // Loading activity notification.
         else if (event.event_type === "updateProgressActivity") {
             console.log('Kit App communicates progress activity.');
-            console.log(event.payload);
-            this.setState({ loadingActivity: event.payload.text });
+            if (this.state.loadingText !== "Loading Asset...")
+                this.setState( {loadingText: "Loading Asset..."} )
         }
-        // Selection changed because user made a selection in streamed viewport.
+            
+        // Notification from Kit about user changing the selection via the viewport.
         else if (event.event_type === "stageSelectionChanged") {
             console.log(event.payload.prims.constructor.name);
             if (!Array.isArray(event.payload.prims) || event.payload.prims.length === 0) {
@@ -297,7 +376,6 @@ export default class App extends React.Component<{}, AppState> {
             const usdPrim = this._findUSDPrimByPath(prim_path);
             if (usdPrim === null) {
                 this.setState({ usdPrims: children });
-                this._toggleLoadingState(false);
             }
             else {
                 usdPrim.children = children;
@@ -317,6 +395,7 @@ export default class App extends React.Component<{}, AppState> {
     /**
     * @function _handleAppStreamFocus
     *
+    * Update state when AppStream is in focus.
     */
     private _handleAppStreamFocus (): void {
         console.log('User is interacting in streamed viewer');
@@ -334,58 +413,50 @@ export default class App extends React.Component<{}, AppState> {
     render() {
         const sidebarWidth = 300;
         const headerHeight = 60;
-        const streamConfig: any = StreamConfig.source === 'gfn' ? {
-            ...StreamConfig[StreamConfig.source],
+        const streamConfig: any = {
             source: StreamConfig.source,
-            //@ts-ignore
-            GFN: GFN
-        } : {
-            //@ts-ignore
-            ...StreamConfig[StreamConfig.source],
-            source: StreamConfig.source
+            gfn: StreamConfig.gfn,
+            local: StreamConfig.local
         };
 
-        
         return (
             <div
-            style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%'
-            }}
-            >
-            {/* Header */}
-            <div className="header-bar">
-            <img src={LogoImage} alt="Logo" className="header-logo" />
-            <span className="header-title">Omniverse Embedded Web Viewer Example</span>
-            </div>
-            
-            {/* Show progress indicator based on isLoadingAsset state */}
-            {this.state.isLoadingAsset &&
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%'
+                }}
+                >
+
+                {/* Header */}
+                <div className="header-bar">
+                    <img src={LogoImage} alt="Logo" className="header-logo" />
+                    <span className="header-title">Omniverse Embedded Web Viewer Example</span>
+                </div>
+                
+                {/* Loading text indicator */}
+                {!this.state.showStream &&
                 <div
-                    className="progress-indicator-container"
+                    className="loading-indicator-container"
                     style={{
                         position: 'absolute',
-                        top: `${headerHeight}px`,
                         height: `calc(100% - ${headerHeight}px)`,
                         width: `calc(100% - ${sidebarWidth}px)`,
-                        visibility: this.state.gfnUser ? 'visible' : 'hidden'
                     }}
                 >
-                    <div className="progress-indicator-label">
-                        Loading {this.state.selectedUSDAsset.name} - {this.state.loadingProgress}%
-                        <div>File: {this.state.loadingActivity}</div>
+                    <div className="loading-indicator-label">
+                        {this.state.loadingText}
                     </div>
                 </div>
-            }
-
+                
+                }
                 {/* Streamed app */}
                 <AppStream
                     streamConfig={streamConfig}
-                    onLoggedIn={(userId) => this.setState({ gfnUser: userId })}
-                    onStarted={() => this._onStreamStarted()}
+                    onLoggedIn={(userId) => this._onLoggedIn(userId)}
+                    onStarted={() => this._pollForKitReady()}
                     onFocus={() => this._handleAppStreamFocus()}
                     onBlur={() => this._handleAppStreamBlur()}
                     style={{
@@ -394,33 +465,33 @@ export default class App extends React.Component<{}, AppState> {
                         top: `${headerHeight}px`,
                         height: `calc(100% - ${headerHeight}px)`,
                         width: `calc(100% - ${sidebarWidth}px)`,
-                        visibility: this.state.gfnUser ? 'visible' : 'hidden'
+                        visibility: this.state.showStream ? 'visible' : 'hidden'
                     }}
                     handleCustomEvent={(event) => this._handleCustomEvent(event)}
                 />
 
-                {this.state.gfnUser &&
-                    <>
-                    {/* USD Asset Selector */}
-                    <USDAsset
-                        usdAssets={this.state.usdAssets}
-                        selectedAssetUrl={this.state.selectedUSDAsset?.url}
-                        onSelectUSDAsset={(value) => this._onSelectUSDAsset(value)}
-                        width={sidebarWidth}
-                    />
-                    {/* USD Stage Listing */}
-                    <USDStage
-                        ref={this.usdStageRef}
-                        width={sidebarWidth}
-                        usdPrims={this.state.usdPrims}
-                        onSelectUSDPrims={(value) => this._onSelectUSDPrims(value)}
-                        selectedUSDPrims={this.state.selectedUSDPrims}
-                        fillUSDPrim={(value) => this._onFillUSDPrim(value)}
-                        onReset={() => this._onStageReset()}
-                    />
-                    </>
+                {this.state.showUI &&
+                <>
+                {/* USD Asset Selector */}
+                <USDAsset
+                    usdAssets={this.state.usdAssets}
+                    selectedAssetUrl={this.state.selectedUSDAsset?.url}
+                    onSelectUSDAsset={(value) => this._onSelectUSDAsset(value)}
+                    width={sidebarWidth}
+                />
+                {/* USD Stage Listing */}
+                <USDStage
+                    ref={this.usdStageRef}
+                    width={sidebarWidth}
+                    usdPrims={this.state.usdPrims}
+                    onSelectUSDPrims={(value) => this._onSelectUSDPrims(value)}
+                    selectedUSDPrims={this.state.selectedUSDPrims}
+                    fillUSDPrim={(value) => this._onFillUSDPrim(value)}
+                    onReset={() => this._onStageReset()}
+                />
+                </>
                 }
-                </div>
+            </div>
             );
         }
     }

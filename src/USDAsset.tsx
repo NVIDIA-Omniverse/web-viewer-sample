@@ -61,7 +61,7 @@ export default class USDAsset extends React.Component<USDAssetProps, USDAssetSta
     }
     
     /**
-    * @function _renderList
+    * @function _findAssetIndexByUrl
     *
     * Find index of asset by url.
     */

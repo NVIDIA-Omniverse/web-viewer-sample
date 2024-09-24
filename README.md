@@ -4,7 +4,7 @@
   <img src="readme-assets/sample.png" width=100% />
 </p>
 
-This sample is part of the larger `Omniverse Embedded Web Viewer Example`.
+This sample is part of the larger [Omniverse Embedded Web Viewer Example](https://docs.omniverse.nvidia.com/web-viewer.html).
 The sample demonstrates how a front end client can present a streamed 
 Omniverse Kit application and how to send messages back and forth between 
 the two apps.
@@ -21,12 +21,14 @@ framework (https://github.com/vitejs).
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
     - [Interacting with the solution](#interacting-with-the-solution)
+- [Viewport Only - a Simpler UI](#viewport-only---a-simpler-ui)
 - [Front End Client Development](#front-end-client-development)
   - [Embed Viewer in an Existing Client](#embed-viewer-in-an-existing-client)
   - [AppStreamer](#appstreamer)
   - [Initialize the Stream](#initialize-the-stream)
   - [Custom Messages with AppStreamer](#custom-messages-with-appstreamer)
   - [Sample Message Loop](#sample-message-loop)
+- [Updating Dependencies](#updating-dependencies)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
 - [Contributing](#contributing)
@@ -35,21 +37,50 @@ framework (https://github.com/vitejs).
 
 - Node.js installation (https://nodejs.org/en/download).
 - Chromium browser.
+- Use of `USD Viewer Template` based application created in [kit-app-template](https://github.com/NVIDIA-Omniverse/kit-app-template) using Kit 106.1.0 or more recent. Section [Viewport Only - a Simpler UI](#viewport-only---a-simpler-ui) describes how to use other application.
 
 ## Quick Start
 
-Here we will run the solution in dev mode.
+This section describes how to run the solution in dev mode on a local workstation.
 
-1. Make sure the prerequisites are fullfilled.
+1. Make sure the [prerequisites](#prerequisites) are fulfilled.
 
-2. Make sure the appropriate Omniverse Kit application is running and streaming.
+2. Launch a streaming Kit application based on the [USD Viewer Template](https://github.com/NVIDIA-Omniverse/kit-app-template/tree/main/templates/apps/usd_viewer) version `106.1` or more recent. 
 
-3. To run this front end client in dev mode, execute the following commands from the project root directory:
+> **_NOTE:_** If you use a modified version of a USD Viewer Template based application - or a different Template all together - you need to refer to 
+[Viewport Only - a Simpler UI](#viewport-only---a-simpler-ui) to reveal the stream. The default state of this sample has code that depends on USD Viewer to be streamed.
 
-- `> npm install`
-- `> npm run dev`
+3. Clone this repository:
 
-4. Open a Chromium browser and navigate to localhost:5173. At this point you should see the Kit application streamed into the web page.
+```bash
+git clone https://github.com/NVIDIA-Omniverse/web-viewer-sample.git
+```
+
+> **_NOTE:_** Due to path length limitations on Windows it is recommended to place repository artifacts in a location closer to the root of the drive.
+> This will help avoid issues with the path lengths when building and packaging applications. If long paths cannot be avoided then executing `git config --global core.longpaths true` prior to
+> cloning might resolve the issue.
+
+4. Navigate into the project:
+
+```bash
+cd web-viewer-sample
+```
+
+5. Install dependencies:
+
+```bash
+npm install
+```
+
+6. Run the client:
+
+```bash
+npm run dev
+```
+
+7. Open a Chromium browser and navigate to [localhost:5173](localhost:5173).
+ 
+At this point you should see the Kit application streamed into the web page.
 
 ### Interacting with the solution
 
@@ -75,6 +106,33 @@ The `USD Stage` presents the contents of the OpenUSD asset.
 
 - Select an item here and it also selects in the viewport.
 - Select something in the viewport and this list shows what was selected.
+
+## Viewport Only - a Simpler UI
+The Web Viewer Sample is configured by default to connect to the USD Viewer application template and includes web UI elements 
+for sending messages to a running Kit application. This is necessary for the USD Viewer template, which in the default use 
+case requires a client to send a request to open a file. Use the ViewportOnly component for other use cases such as when 
+streaming USD Viewer loading a file on startup or for completely different Kit applications.
+
+To switch to a Viewport-only interface simply edit the import statement in [./src/App.tsx](src/App.tsx):
+
+From:
+```typescript
+import Window from './Window';
+```
+
+To:
+```typescript
+import Window from './ViewportOnly';
+```
+
+As an exercise, create an application from a different template (such as `USD Composer`) in the [kit-app-template repository](https://github.com/NVIDIA-Omniverse/kit-app-template).
+Run the streaming version of that application and this client.
+
+> **_NOTE:_** Without any `custom messages` being sent you can interact with the application within the client interface as if you were using the actual application.
+
+<p align="center">
+  <img src="readme-assets/viewport-only.png" width=100% />
+</p>
 
 ## Front End Client Development
 
@@ -144,11 +202,11 @@ streamConfig = {
 };
 ```
 
-It’s important to note that the "stream resolution” is the size of the Kit application. It is not the resolution 
-in the Kit application viewport. By default, the USD Viewer template is set to change the viewport resolution to 
-fit the size of the viewport; meaning, the resolution is adjusted as the application window is resized. 
-If you want to add the ability to change the viewport resolution during an active session you could send a custom 
-message from the front end client to request the change.
+> **_NOTE:_** The "stream resolution” is the size of the Kit application. It is not the resolution 
+> in the Kit application viewport. If you want to add the ability to change the viewport resolution
+> during an active session you could send a custom message from the front end client to request the change.
+
+> **_NOTE:_**  The `gfn-client-sdk.js` script source in [index.html](index.html) can be removed when using `local` stream source. That library reference is only needed when streaming from GDN/GFN.
 
 ### Custom Messages with AppStreamer
 
@@ -271,9 +329,23 @@ This `payload` can contain whatever data is desired.
 The above is a **custom capability of this example solution**. Developers should decide on what messages and payloads to
 implement for their solutions.
 
+## Updating Dependencies
+
+The `omniverse-webrtc-streaming-library` is updated over time. To get the most recent version:
+
+1. Delete the `./node_modules` directory if it exists.
+2. Delete the [package-lock.json](./package-lock.json) file.
+3. Pull dependencies:
+
+```bash
+npm install
+```
+
 ## Troubleshooting
 
 Things don't always turn out as expected. If you are not getting the expected results use the below steps to troubleshoot.
+
+### General steps
 
 - Check the browser console for errors.
 - Check the Kit application log for errors.
@@ -290,6 +362,14 @@ updated. Does it work if you use an older version?
   - Shut down the Kit application. 
   - Start the Kit application. 
   - Start the dev server: `npm run dev`
+
+### Refreshing the Client
+
+Kit app streaming is designed to start, run, and end; however, while developing the solution you may want to refresh the client 
+in a browser and thus interrupt the normal flow.
+
+Restarting the client could cause errors on the Kit application side. If the stream does not immediately re-appear just wait a few seconds.
+If it still does not appear try refreshing the browser one more time. If this doesn't work you may need to restart the Kit application and client.
 
 ## License
 
