@@ -12,8 +12,8 @@
 #main-div {
     display: flex;
     flex-direction: column;
-    align-items: stretch;  // Ensures that child elements are not centered
-    justify-content: flex-start;  // Aligns children to the top of the container
+    align-items: stretch;  /* Ensures that child elements are not centered */
+    justify-content: flex-start;  /* Aligns children to the top of the container */
 }
 
 #remote-video {
@@ -21,5 +21,5 @@
     top: 0;
     left: 0;
     width: 100%;
-    height: auto;  // Adjust height to 'auto' if you want the natural height of the video to apply
+    height: auto;  /* Adjust height to 'auto' if you want the natural height of the video to apply */
 }

@@ -9,6 +9,7 @@
  * without an express license agreement from NVIDIA CORPORATION or
  * its affiliates is strictly prohibited.
  */
+ 
 /* For the loading indicator */
 @keyframes rotation {
     0% {
@@ -20,5 +21,94 @@
 }
 
 body {
-    background-color: #FFFFFF; /* Example: NVIDIA green */
+    background-color: #FFFFFF;
+}
+
+.header-bar {
+    width: 100%;
+    height: 60px; /* Adjust the height as needed */
+    background-color: #000000; /* Dark background for the header */
+    color: white;
+    display: flex;
+    align-items: center;
+    padding-left: 20px; /* Padding for content inside header */
+}
+
+.header-logo {
+    height: 32px; /* Adjust based on your logo's aspect ratio */
+    margin-right: 10px;
+}
+
+.header-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.loading-indicator-label {
+    margin-top: 50px;
+    padding-bottom: 25px;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 25px;
+    width: 100%;
+    background-color: rgba(255, 255, 255);
+    color: #76b900; /* NVIDIA green */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    font-weight: bold;
+}
+
+.nvidia-button {
+    font-size: 14px;
+    margin-top: 6px; /* Space above the button */
+    padding: 4px 8px; /* Padding inside the button */
+    background-color: #76b900; /* NVIDIA green */
+    color: white; /* Text color */
+    border: solid;
+    border-color: #76b900;
+    border-width: 2px;
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.nvidia-button:hover {
+    background-color: #ffffff; /* Darker green on hover */
+    color: black;
+    border-color: #76b900;
+}
+
+.nvidia-dropdown {
+    width: 100%;
+    background-color: #76b900; /* NVIDIA green */
+    color: #ffffff; /* White text */
+    font-size: 16px; /* Adjust font size as needed */
+    border: none;
+    height: 35px;
+    border-radius: 6px;
+}
+
+.nvidia-dropdown:focus {
+    outline: none;
+}
+
+.nvidia-dropdown-option {
+    background-color: #FEFEFE; /* Light background for options */
+    color: #000000; /* Dark text for options */
+}
+
+.form-check-input:checked {
+    background-color: #76b900; /* NVIDIA green */
+    border-color: #76b900; /* NVIDIA green */
+  }
+  
+.form-check-input:focus, .form-check-input:focus-visible {
+    outline: none; /* Remove the default outline */
+    box-shadow: 0 0 0 0.2rem rgba(118, 185, 0, 0.5); /* Custom green focus shadow */
+  }
+
+.form-control:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.25rem rgba(118, 185, 0, 0.5); /* Custom green focus */
+    border-color: #76b900;
 }

@@ -11,7 +11,9 @@
  */
 
 import React from "react";
+import './App.css';
 import './USDAsset.css';
+
 
 interface USDAssetProps {
     width: number;
@@ -83,7 +85,7 @@ export default class USDAsset extends React.Component<USDAssetProps, USDAssetSta
 
           return (
               <select
-                  className="usdAssetSelector"
+                  className="nvidia-dropdown"
                   onChange={this._handleSelectChange}
                   value={this.state.selectedUSDAssetIndex || ''}>
                   {options}
@@ -101,6 +103,7 @@ export default class USDAsset extends React.Component<USDAssetProps, USDAssetSta
                       {this._renderSelector()}
                   </div>
               </div>
+
           );
     }
 }

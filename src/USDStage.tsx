@@ -10,7 +10,9 @@
  * its affiliates is strictly prohibited.
  */
 import React from "react";
+import './App.css';
 import './USDStage.css';
+
 
 interface USDPrimType {
     name?: string;
@@ -125,7 +127,7 @@ export default class USDStage extends React.Component<USDStageProps, { expandedI
             <div className="usdStageContainer" style={{ width: this.props.width }}>
                 <div className="usdStageHeader">
                     {'USD Stage'}
-                    <button className="usdStageButton" onClick={this._onReset}>Reset</button>
+                    <button className="nvidia-button" onClick={this._onReset}>Reset</button>
                 </div>
                 <ul className="list-container">
                     {this._renderList(this.props.usdPrims)}

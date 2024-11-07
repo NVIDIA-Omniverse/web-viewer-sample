@@ -1,6 +1,6 @@
 {
     "name": "@nvidia/web-viewer-sample",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "Sample application to showcase streaming of Omniverse Kit applications to a web client application.",
     "author": "Nvidia",
     "license": "SEE LICENSE IN LICENSE",
@@ -26,7 +26,8 @@
         }
     },
     "dependencies": {
-        "@nvidia/omniverse-webrtc-streaming-library": "^2.7.6",
+        "@nvidia/omniverse-webrtc-streaming-library": "3.2.0",
+        "bootstrap": "^5.3.3",
         "prop-types": "^15.8.1",
         "react": "^18.2.0",
         "react-bootstrap": "^2.9.1",

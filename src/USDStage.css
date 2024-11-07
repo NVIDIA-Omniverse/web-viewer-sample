@@ -11,7 +11,7 @@
  */
 .usdStageContainer {
     position: absolute;
-    top: 155px;
+    top: 105px;
     right: 0;
     height: calc(100% - 185px);
     background-color: #FEFEFE;
@@ -89,9 +89,9 @@
 
 .expand-toggle {
     cursor: pointer;
-    padding-right: 8px;  // Provides space to click
-    user-select: none;  // Prevents text selection on click
-    display: inline-block;  // Ensures alignment with text
+    padding-right: 8px;  /* Provides space to click */
+    user-select: none;  /* Prevents text selection on click */
+    display: inline-block;  /* Ensures alignment with text */
 }
 
 .expand-toggle.deselected {
@@ -100,22 +100,4 @@
 
 .expand-toggle.selected {
     color: #FFFFFF;
-}
-
-.usdStageButton {
-    font-size: 14px;
-    margin-top: 6px; /* Space above the button */
-    padding: 4px 8px; /* Padding inside the button */
-    background-color: #76b900; /* NVIDIA green, or another color */
-    color: white; /* Text color */
-    border: solid;
-    border-color: #76b900;
-    border-width: 2px;
-    cursor: pointer; /* Pointer cursor on hover */
-}
-
-.usdStageButton:hover {
-    background-color: #ffffff; /* Darker green on hover */
-    color: black;
-    border-color: #76b900;
 }

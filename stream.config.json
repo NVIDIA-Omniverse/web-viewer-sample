@@ -1,11 +1,17 @@
 {
-    "$comment": "source can be either 'gfn' or 'local'",
+    "$comment": "source can be 'gfn', 'local' or 'stream'",
     "source": "local",
+    "stream":
+    {
+        "$comment": "Optional props if source is set to 'stream'.",
+        "appServer": "",
+        "streamServer": ""
+    },
     "gfn": {
         "$comment": "Required props if source is set to 'gfn'.",
         "catalogClientId": "",
         "clientId": "",
-        "cmsId": 1
+        "cmsId": 0
     },
     "local": {
         "$comment": "Required props if source is set to 'local'.",
