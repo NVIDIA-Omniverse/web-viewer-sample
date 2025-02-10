@@ -15,16 +15,15 @@
  * elements for sending messages to a running Kit application. This is necessary for the USD Viewer template, which in
  * the default use case requires a client to send a request to open a file.
  */
-
 import 'bootstrap/dist/css/bootstrap.min.css';
-
+import { AppStreamer } from '@nvidia/omniverse-webrtc-streaming-library';
 import { Component } from 'react';
 import "./App.css";
 import Window from './Window';
 import StreamOnlyWindow from './StreamOnlyWindow';
 import { Application, AppOnlyForm, ServerURLsForm, ApplicationsForm, VersionsForm, ProfilesForm } from "./Forms"
 import LogoImage from './assets/nvidia_logo.png';
-import StreamConfig from '../stream.config.json'
+import StreamConfig from '../stream.config.json';
 import {
     getStreamingSessionInfo,
     createStreamingSession,
@@ -32,9 +31,7 @@ import {
     StreamItem
 } from './Endpoints';
 
-
 export const headerHeight: number = 60;
-
 
 enum StreamStatus {
     IDLE,
@@ -146,7 +143,7 @@ class App extends Component<{}, AppState>{
                 this.setupStream(response.data as StreamItem);
             }
             else {
-                setTimeout(() => this.pollForSessionReady(sessionId), 120000);
+                setTimeout(() => this.pollForSessionReady(sessionId), 10000);
                 console.log( `Waiting for session ${sessionId} to be ready... Last checked at ${new Date().toLocaleTimeString()}`)
             }
         } catch (error) {
@@ -222,7 +219,9 @@ class App extends Component<{}, AppState>{
     private async _resetStream() {
         await this._endStream()
         this._resetState()
+        AppStreamer.terminate()
     }
+
 
     /**
      * Ends the currently running stream by the unique ID
@@ -345,6 +344,7 @@ class App extends Component<{}, AppState>{
                     mediaserver={this.state.mediaserver}
                     mediaport={this.state.mediaport}
                     accessToken={this.state.accessToken}
+                    onStreamFailed={this._resetStream}
                 />    
                 }
                 
@@ -358,6 +358,7 @@ class App extends Component<{}, AppState>{
                     mediaserver={this.state.mediaserver}
                     mediaport={this.state.mediaport}
                     accessToken={this.state.accessToken}
+                    onStreamFailed={this._resetStream}
                 />    
             }  
         </div>

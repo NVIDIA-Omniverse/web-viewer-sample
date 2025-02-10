@@ -105,23 +105,29 @@ export class AppOnlyForm extends Component <AppOnlyProps, AppOnlyState>{
     render () {
         return (
             
-        <div style={formContainerStyle}>
-            <h3>Include Web UI?</h3>
-            <label>Selecting <b>Yes</b> will include a UI that provides additional options for interacting with the stream.</label>
-            <br/>
-            <label>Selecting <b>No</b> will include the stream only.</label>
-            <br/>
+            <div style={formContainerStyle}>
+            <h3>UI Option</h3>
+                <label>This client is part of the <a
+                    href="https://docs.omniverse.nvidia.com/embedded-web-viewer/latest/index.html" target="_blank"
+                    rel="noopener noreferrer">Embedded Web Viewer Guide</a>.
+                    It provides a user interface and functionality that supports Kit applications created from
+                    the <b>USD Viewer</b> Template in the <a href="https://github.com/NVIDIA-Omniverse/kit-app-template"
+                                              target="_blank" rel="noopener noreferrer">kit-app-template</a>.
+                    <br/>
+                    If you are using this client to stream any other application you need to select the 2nd option below in order for the streamed application to become visible.
+                </label>
+                <br/>
             <br/>
             <div className="form-check">
                 <input className="form-check-input" type="radio" name="webUiRadio" checked={this.state.useWebUI} id="yes" onChange={() => this._handleOptionChange(true)}/>
                 <label className="form-check-label" htmlFor="radios1">
-                    Yes
+                    UI for default streaming <b>USD Viewer</b> app
                 </label>
             </div>
             <div className="form-check">
                 <input className="form-check-input" type="radio" name="webUiRadio" id="no" checked={!this.state.useWebUI} onChange={() => this._handleOptionChange(false)}/>
                 <label className="form-check-label" htmlFor="radios1">
-                    No
+                    UI for <b>any</b> streaming app
                 </label>
             </div>
             <button type="button" className="nvidia-button" onClick={() => this.props.onNext(this.state)} style={nextButtonStyle}>Next</button>

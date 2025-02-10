@@ -37,6 +37,7 @@ export interface AppProps {
     mediaserver: string
     mediaport: number
     accessToken: string
+    onStreamFailed: () => void;
 }
 
 interface AppState {
@@ -322,8 +323,6 @@ export default class App extends React.Component<AppProps, AppState> {
         if (event.event_type === "openedStageResult") {
             if (event.payload.result === "success") {
                 this._queryLoadingState() 
-                console.log('Kit App communicates an asset was loaded: ' + event.payload.url);
-                this._getChildren(null); // Hide progress indicator
             }
             else {
                 console.error('Kit App communicates there was an error loading: ' + event.payload.url);
@@ -486,6 +485,7 @@ export default class App extends React.Component<AppProps, AppState> {
                     }}
                     onLoggedIn={(userId) => this._onLoggedIn(userId)}
                     handleCustomEvent={(event) => this._handleCustomEvent(event)}
+                    onStreamFailed={this.props.onStreamFailed}
                     />
                 </div>
 
