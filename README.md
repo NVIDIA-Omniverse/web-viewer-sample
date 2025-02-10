@@ -37,13 +37,18 @@ framework (https://github.com/vitejs).
 
 - Node.js installation (https://nodejs.org/en/download).
 - Chromium browser.
-- Use of `USD Viewer Template` based application created in [kit-app-template](https://github.com/NVIDIA-Omniverse/kit-app-template) using Kit 106.1.0 or more recent. Section [Viewport Only - a Simpler UI](#viewport-only---a-simpler-ui) describes how to use other application.
+- Use of `USD Viewer Template` based application created in [kit-app-template](https://github.com/NVIDIA-Omniverse/kit-app-template) using Kit 106.1.0 or more recent. Section [Client Options](#client-options) describes how to use other applications.
 
 ## Quick Start
 
 This section describes how to run the solution in dev mode on a local workstation.
 
-1. Make sure the [prerequisites](#prerequisites) are fulfilled.
+1. Make sure the [prerequisites](#prerequisites) are fulfilled. Refer to the [package.json's engine section](package.json#L10-11) for the minimum Node.js and npm versions required to run this application. To verify your Node.js and npm installations, run these commands and it should print the version numbers:
+
+```bash
+node -v
+npm -v
+```
 
 2. Launch a streaming Kit application based on the [USD Viewer Template](https://github.com/NVIDIA-Omniverse/kit-app-template/tree/main/templates/apps/usd_viewer).
 
@@ -65,6 +70,18 @@ cd web-viewer-sample
 npm install
 ```
 
+> **_NOTE:_**  A new terminal is needed for `npm` commands if Node.js was recently installed.
+
+If you encounter the following `Unsupported engine` warning, it indicates that you do not have the correct Node.js or npm version installed for this application and your app may not work as expected. Refer to the [package.json's engine section](package.json#L10-11) for the minimum required versions.
+
+```bash
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: '@nvidia/web-viewer-sample@1.4.0',
+npm warn EBADENGINE   required: { node: '^18.0.0', npm: '^10.0.0' },
+npm warn EBADENGINE   current: { node: '17.0.0', npm: '10.9.2' }
+npm warn EBADENGINE }
+```
+
 6. Run the client:
 
 ```bash
@@ -82,9 +99,9 @@ At this point you should see options for configuring the client.
 When running this client, you will be presented with options to configure options prior to the stream launching. These
 options will vary depending on the stream source defined in the [stream.config.json](stream.config.json) file.  
 
-All stream sources will initally display a `Include Web UI?` prompt. Selecting `Yes` will include web UI elements
+All stream sources will initally display an `Include USD Viewer UI?` prompt. Selecting `USD Viewer UI` will include a UI
 for sending messages to a running Kit application. This is necessary for the USD Viewer template, which in the default use
-case requires a client to send a request to open a file. Select `No` for other use cases such as when
+case requires a client to send a request to open a file. Select `Streamed app only` for other use cases such as when
 streaming USD Viewer loading a file on startup or for completely different Kit applications.
 
 <p align="center">
@@ -102,6 +119,9 @@ Note that without any `custom messages` being sent you can interact with the app
 
 When running the client using `stream` as the source in the [stream.config.json](stream.config.json) file, you will be presented with addtitional options for
 entering an application and stream server, selecting an application, application version and application profile prior to creating the streaming session.
+
+> **_NOTE:_**  The stream instance is automatically terminated if the max reconnect attempts [defined in the stream config](./src/AppStream.tsx#L118) are exceeded. If more time is needed,
+you should increase this value. This may be necessary on the first attempt, as Kit needs additional time for shader caching.
 
 ### Interacting with the solution
 
@@ -338,6 +358,11 @@ updated. Does it work if you use an older version?
   - Shut down the Kit application. 
   - Start the Kit application. 
   - Start the dev server: `npm run dev`
+- If you are running `npm install` using Windows PowerShell and are encountering a `File C:\Program Files\nodejs\npm.ps1 cannot be loaded because running scripts is disabled on this system.` error:
+  - Restart PowerShell as administrator
+  - Run `Set-ExecutionPolicy RemoteSigned`
+  - Follow the prompt to change the execution policy
+  - Re-run `npm install`
 
 ### Refreshing the Client
 

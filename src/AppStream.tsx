@@ -11,7 +11,7 @@
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { AppStreamer, StreamEvent, StreamProps, RagnarokConfig, GFNConfig } from '@nvidia/omniverse-webrtc-streaming-library';
+import { AppStreamer, StreamEvent, StreamProps, DirectConfig, GFNConfig } from '@nvidia/omniverse-webrtc-streaming-library';
 import StreamConfig from '../stream.config.json';
 
 
@@ -25,6 +25,7 @@ interface AppStreamProps {
     accessToken: string
     style?: React.CSSProperties;
     onStarted: () => void;
+    onStreamFailed: () => void;
     onLoggedIn: (userId: string) => void;
     handleCustomEvent: (event: any) => void;
     onFocus: () => void;
@@ -62,7 +63,7 @@ export default class AppStream extends Component<AppStreamProps, AppStreamState>
             this._requested = true;
 
             let streamProps: StreamProps;
-            let streamConfig: RagnarokConfig | GFNConfig;
+            let streamConfig: DirectConfig | GFNConfig;
             let streamSource: 'gfn' | 'direct';
 
             if (StreamConfig.source === 'gfn') {
@@ -102,13 +103,13 @@ export default class AppStream extends Component<AppStreamProps, AppStreamState>
             else if (StreamConfig.source === 'stream') {
                 streamSource = 'direct'
                 streamConfig = {
-                    signalingserver: this.props.signalingserver,
-                    signalingport: this.props.signalingport,
-                    mediaserver: this.props.mediaserver,
-                    mediaport: this.props.mediaport,
-                    backendurl: this.props.backendUrl,
-                    sessionid: this.props.sessionId,
-                    autolaunch: true,
+                    signalingServer: this.props.signalingserver,
+                    signalingPort: this.props.signalingport,
+                    mediaServer: this.props.mediaserver,
+                    mediaPort: this.props.mediaport,
+                    backendUrl: this.props.backendUrl,
+                    sessionId: this.props.sessionId,
+                    autoLaunch: true,
                     cursor: 'free',
                     mic: false,
                     videoElementId: 'remote-video',
@@ -182,6 +183,14 @@ export default class AppStream extends Component<AppStreamProps, AppStreamState>
             console.info('streamReady');
             this.setState({ streamReady: true });
             this.props.onStarted();
+        }
+
+        if (message.status === "error" && StreamConfig.source === "stream")
+        {
+            console.log(message.info);
+            alert(message.info);
+            this.props.onStreamFailed();
+            return;
         }
     }
 

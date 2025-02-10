@@ -85,6 +85,7 @@ export default class StreamOnly extends React.Component<AppProps> {
                     }}
                     onLoggedIn={(userId) => console.log(`User logged in: ${userId}`)}
                     handleCustomEvent={(event) => this._handleCustomEvent(event)}
+                    onStreamFailed={this.props.onStreamFailed}
                 />
             </div>
             );
