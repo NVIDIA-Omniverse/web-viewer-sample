@@ -9,7 +9,7 @@ The sample demonstrates how a front end client can present a streamed
 Omniverse Kit application and how to send messages back and forth between 
 the two apps. This sample supports the following streaming deployments:
 - Local
-- [Omniverse Kit Application Streaming (OKAS)](https://docs.omniverse.nvidia.com/ovas/latest/index.html)
+- [Omniverse Kit App Streaming (OKAS)](https://docs.omniverse.nvidia.com/ovas/latest/index.html)
 - [GDN](https://www.nvidia.com/en-us/omniverse/solutions/stream-3d-apps/)
 
 This application is designed to be used with the `USD Viewer Sample` in https://github.com/NVIDIA-Omniverse/kit-app-template.
@@ -114,11 +114,11 @@ Local streaming is used when connecting directly to a running Kit app. To use th
 
 #### Omniverse Kit App Streaming
 
-Omniverse Kit Application Streaming (OKAS) is an API that provides Kit app streaming on demand. Set the `source` field to `"stream"` in the [stream.config.json](stream.config.json#L3). You can also provide a default [app server](stream.config.json#L7) and [stream server](stream.config.json#L8), but these values aren't required as you can set them in the `Server Information` form when you run this sample.
+Omniverse Kit App Streaming (OKAS) is an API that provides Kit app streaming on demand. Set the `source` field to `"stream"` in the [stream.config.json](stream.config.json#L3). You can also provide a default [app server](stream.config.json#L7) and [stream server](stream.config.json#L8), but these values aren't required as you can set them in the `Server Information` form when you run this sample.
 
 #### GDN
 
-GDN also provides Kit app streaming on demand like Omniverse Kit Application Streaming does but needs a different set of configurations. For this option, set the `source` field to `"gfn"` in the [stream.config.json](stream.config.json#L3). Values for [catalogClientId](stream.config.json#L12), [clientId](stream.config.json#L13) and [cmsId](stream.config.json#14) are also required.
+GDN also provides Kit app streaming on demand like Omniverse Kit App Streaming does but needs a different set of configurations. For this option, set the `source` field to `"gfn"` in the [stream.config.json](stream.config.json#L3). Values for [catalogClientId](stream.config.json#L12), [clientId](stream.config.json#L13) and [cmsId](stream.config.json#14) are also required.
 
 ### Client UI
 
@@ -153,7 +153,7 @@ Here is an example of streaming with USD Composer:
   <img src="readme-assets/viewport-only.png" width=100% />
 </p>
 
-#### Omniverse Kit Application Streaming UI
+#### Omniverse Kit App Streaming UI
 
 After selecting the UI Option, you will be presented with additional options for configuring your stream settings. The next prompt is the `Server Information` form, which asks for app server and stream server values. If these values were provided in the stream.config.json, they will automatically populate in this form.
 
