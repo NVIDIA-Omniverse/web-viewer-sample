@@ -1,6 +1,6 @@
 {
     "name": "@nvidia/web-viewer-sample",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "description": "Sample application to showcase streaming of Omniverse Kit applications to a web client application.",
     "author": "Nvidia",
     "license": "SEE LICENSE IN LICENSE",
