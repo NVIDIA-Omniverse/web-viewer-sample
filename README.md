@@ -227,8 +227,8 @@ If this sample ticks all the boxes for what you want to develop then you are off
 start. Simply make it your own and continue developing in it. However, it's likely that you 
 have an existing client that you want to embed the viewer into. 
 In the section [Embed Viewer in an Existing Client](README.md#embed-viewer-in-an-existing-client) 
-we provide instructions for how to add the `omniverse-webrtc-streaming-library` as a dependency. 
-The library will provide pixel streaming and messaging to your client. The remainder of the topics 
+we provide instructions for how to add the [omniverse-webrtc-streaming-library](https://docs.omniverse.nvidia.com/services/latest/services/web-streaming-library/overview.html) as a dependency. 
+This package provides functionality to allow managing Omniverse Kit applications streaming from GFN, on a local machine, or from some container instance with a provided URL. The remainder of the topics 
 here are presented in context of this sample so that it's easy to follow along and try things out. 
 Use this sample as a reference for implementing in your own client.
 
