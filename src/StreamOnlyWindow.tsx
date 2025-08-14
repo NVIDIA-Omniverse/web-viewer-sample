@@ -57,37 +57,42 @@ export default class StreamOnly extends React.Component<AppProps> {
     }
 
     render() {
-
         return (
             <div
                 style={{
                     position: 'absolute',
                     top: headerHeight,
-                    width: '100%',
-                    height: '100%'
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    padding: 0,
+                    margin: 0
                 }}
             >
-                <AppStream
-                    sessionId={this.props.sessionId}
-                    backendUrl={this.props.backendUrl}
-                    signalingserver={this.props.signalingserver}
-                    signalingport={this.props.signalingport}
-                    mediaserver={this.props.mediaserver}
-                    mediaport={this.props.mediaport}
-                    accessToken={this.props.accessToken}
-                    onStarted={() => this._onStreamStarted()}
-                    onFocus={() => this._handleAppStreamFocus()}
-                    onBlur={() => this._handleAppStreamBlur()}
-                    style={{
-                        position: 'relative',
-                        top: 0,
-                        left: 0,
-                    }}
-                    onLoggedIn={(userId) => console.log(`User logged in: ${userId}`)}
-                    handleCustomEvent={(event) => this._handleCustomEvent(event)}
-                    onStreamFailed={this.props.onStreamFailed}
-                />
+                <div id="streamonly-wrapper">
+                    <AppStream
+                        sessionId={this.props.sessionId}
+                        backendUrl={this.props.backendUrl}
+                        signalingserver={this.props.signalingserver}
+                        signalingport={this.props.signalingport}
+                        mediaserver={this.props.mediaserver}
+                        mediaport={this.props.mediaport}
+                        accessToken={this.props.accessToken}
+                        onStarted={() => this._onStreamStarted()}
+                        onFocus={() => this._handleAppStreamFocus()}
+                        onBlur={() => this._handleAppStreamBlur()}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                            padding: 0,
+                            margin: 0
+                        }}
+                        onLoggedIn={(userId) => console.log(`User logged in: ${userId}`)}
+                        handleCustomEvent={(event) => this._handleCustomEvent(event)}
+                        onStreamFailed={this.props.onStreamFailed}
+                    />
+                </div>
             </div>
-            );
-        }
+        );
     }
+}

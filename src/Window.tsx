@@ -67,8 +67,8 @@ export default class App extends React.Component<AppProps, AppState> {
         
         // list of selectable USD assets
         const usdAssets: USDAssetType[] = StreamConfig.source === "stream"? [
-            {name: "Sample 1", url:"/app/samples/stage01.usd"},
-            {name: "Sample 2", url:"/app/samples/stage02.usd"},
+            {name: "Sample 1", url:"${omni.usd_viewer.samples}/samples_data/stage01.usd"},
+            {name: "Sample 2", url:"${omni.usd_viewer.samples}/samples_data/stage02.usd"},
         ]
         :
         [

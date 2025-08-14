@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.2] - 2025-08-12
+
+### Fixed
+- Cursor becoming offset for USD Composer when stream didn't fill the entire window
+
+## [1.5.1] - 2025-08-08
+
+### Changed
+- Use null default value for mediaPort in the stream.config.json and only pass to local streaming config if a value is provided.
+
+## [1.5.0] - 2025-07-23
+
+### Changed
+- Bumped dependency @nvidia/omniverse-webrtc-streaming-library to version 5.6.0.
+- Reverted v1.4.3 fix - app stream can now resize beyond browser window dimensions
+
+### Fixed
+- Updated sample stage file paths for Kit 107.3 compatibility
+- server.js route syntax for Express v5
+
+## [1.4.3] - 2025-04-03
+
+### Fixed
+- App stream will not resize beyond dimensions of web browser window
+
+## [1.4.2] - 2025-03-06
+
+### Removed
+- 'server' parameter for local streaming
+
+### Added
+- 'signalingServer', 'signalingPort', 'mediaServer', 'mediaPort' parameters for local streaming
+- 'signalingPort' and 'mediaPort' for stream.config.json's local streaming options
+
 ## [1.4.1] - 2025-03-04
 
 ### Changed
