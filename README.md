@@ -72,8 +72,8 @@ npm -v
    git clone -b 1.5.2 https://github.com/NVIDIA-Omniverse/web-viewer-sample.git
    ```
 
-   > [!Important]
-   > Always use the specific versioned branch that matches your Kit version for compatibility. The `main` branch contains the latest development code but may not be compatible with your Kit version.
+> [!Important]
+> Always use the specific versioned branch that matches your Kit version for compatibility. The `main` branch contains the latest development code but may not be compatible with your Kit version.
 
 
 4. Navigate into the project:
