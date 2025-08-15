@@ -11,7 +11,7 @@
  */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { AppStreamer, StreamEvent, StreamProps, DirectConfig, GFNConfig } from '@nvidia/omniverse-webrtc-streaming-library';
+import { AppStreamer, StreamEvent, StreamProps, DirectConfig, GFNConfig, StreamType } from '@nvidia/omniverse-webrtc-streaming-library';
 import StreamConfig from '../stream.config.json';
 
 
@@ -64,10 +64,10 @@ export default class AppStream extends Component<AppStreamProps, AppStreamState>
 
             let streamProps: StreamProps;
             let streamConfig: DirectConfig | GFNConfig;
-            let streamSource: 'gfn' | 'direct';
+            let streamSource: StreamType.DIRECT | StreamType.GFN;
 
             if (StreamConfig.source === 'gfn') {
-                    streamSource = 'gfn'
+                    streamSource = StreamType.GFN;
                     streamConfig = {
                         //@ts-ignore
                         GFN             : GFN,
@@ -81,13 +81,16 @@ export default class AppStream extends Component<AppStreamProps, AppStreamState>
             }
 
             else if (StreamConfig.source === 'local') {
-                streamSource = 'direct';
+                streamSource = StreamType.DIRECT;
                 streamConfig = {
                     videoElementId: 'remote-video',
                     audioElementId: 'remote-audio',
-                    authenticate: false,
+                    authenticate: true,
                     maxReconnects: 20,
-                    server: StreamConfig.local.server,
+                    signalingServer: StreamConfig.local.server,
+                    signalingPort: StreamConfig.local.signalingPort,
+                    mediaServer: StreamConfig.local.server,
+                    ...(StreamConfig.local.mediaPort != null && { mediaPort: StreamConfig.local.mediaPort }),
                     nativeTouchEvents: true,
                     width: 1920,
                     height: 1080,
@@ -101,7 +104,7 @@ export default class AppStream extends Component<AppStreamProps, AppStreamState>
             }
                 
             else if (StreamConfig.source === 'stream') {
-                streamSource = 'direct'
+                streamSource =  StreamType.DIRECT;
                 streamConfig = {
                     signalingServer: this.props.signalingserver,
                     signalingPort: this.props.signalingport,
@@ -152,15 +155,7 @@ export default class AppStream extends Component<AppStreamProps, AppStreamState>
     componentDidUpdate(_prevProps: AppStreamProps, prevState: AppStreamState, _snapshot: any) {
         if (prevState.streamReady === false && this.state.streamReady === true) {
             const player = document.getElementById("gfn-stream-player-video") as HTMLVideoElement;
-            
             if (player) {
-                if (StreamConfig.source === "gfn")
-                {
-                    player.style.position = "relative";
-                    const container = document.getElementById("gfn-stream-player-video-container") as HTMLVideoElement;
-                    container.style.background = "white";
-                }
-
                 player.tabIndex = -1;
                 player.playsInline = true;
                 player.muted = true;
