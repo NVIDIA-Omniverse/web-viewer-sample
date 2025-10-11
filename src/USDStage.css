@@ -33,7 +33,7 @@
 .list-container {
     max-height: calc(100% - 60px); /* Adjust based on header and any other UI elements */
     overflow-y: auto; /* Enables vertical scrolling */
-    scrollbar-color: #76b900 #e0e0e0; /* For Firefox, thumb and track colors */
+    scrollbar-color: #3DCD58 #e0e0e0; /* For Firefox, thumb and track colors */
     padding-inline-start: 30px;
     padding-right: 30px;
 }
@@ -47,7 +47,7 @@
 }
 
 .list-container::-webkit-scrollbar-thumb {
-    background-color: #76b900; /* NVIDIA green */
+    background-color: #3DCD58; /* NVIDIA green */
     border-radius: 10px; /* Rounded corners on the scrollbar thumb */
     border: 2px solid #e0e0e0; /* Optional: adds a border around the thumb */
 }
@@ -83,7 +83,7 @@
 }
 
 .item-content.selected {
-    background-color: #76b900; /* NVIDIA green */
+    background-color: #3DCD58; /* NVIDIA green */
     color: #ffffff; /* White text color */
 }
 
@@ -95,7 +95,7 @@
 }
 
 .expand-toggle.deselected {
-    color: #76b900;
+    color: #3DCD58;
 }
 
 .expand-toggle.selected {

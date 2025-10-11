@@ -26,3 +26,4 @@ yalc.lock
 *.njsproj
 *.sln
 *.sw?
+kit-app-template/ 

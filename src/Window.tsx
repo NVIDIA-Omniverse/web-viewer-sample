@@ -11,13 +11,13 @@
  */
 import React from 'react';
 import './App.css';
-import AppStream from './AppStream';
+import AppStream from './AppStream'; // Ensure .tsx extension if needed
 import StreamConfig from '../stream.config.json';
 import USDAsset from "./USDAsset";
 import USDStage from "./USDStage";
-import PIDataPanel from "./PIDataPanel"; // New component for PI data display
 import { headerHeight } from './App';
 
+ 
 interface USDAssetType {
     name: string;
     url: string;
@@ -27,21 +27,6 @@ interface USDPrimType {
     name?: string;
     path: string;
     children?: USDPrimType[];
-}
-
-// PI Data interfaces
-interface PIDataValue {
-    name: string;
-    value: number | string;
-    unit: string;
-    timestamp: string;
-}
-
-interface PIDataState {
-    values: PIDataValue[];
-    isLoading: boolean;
-    error: string | null;
-    lastUpdated: string | null;
 }
 
 export interface AppProps {
@@ -64,16 +49,89 @@ interface AppState {
     showStream: boolean;
     showUI: boolean;
     isLoading: boolean;
-    loadingText: string;
-    // PI Data related state
-    piData: PIDataState;
-    showPiPanel: boolean;
-    selectedObjectPath: string;
+    loadingText: string; 
+    selectedCamera: string;
 }
 
 interface AppStreamMessageType {
     event_type: string;
     payload: any;
+}
+
+// Camera Selector Component - UPDATED WITH FREE CAMERA
+interface CameraSelectorProps {
+    visible: boolean;
+    onCameraSelect: (cameraPath: string) => void;
+    selectedCamera: string;
+}
+
+interface CameraSelectorState {
+    selectedCamera: string;
+}
+
+class CameraSelector extends React.Component<CameraSelectorProps, CameraSelectorState> {
+    private cameras = [
+        { name: "Free Camera", path: "" }, // NEW: Free navigation mode
+        { name: "P5A", path: "/World/MEP____/Cameras/P5A" },
+        { name: "P5B", path: "/World/MEP____/Cameras/P5B" },
+        { name: "P5C", path: "/World/MEP____/Cameras/P5C" },
+        { name: "P5D", path: "/World/MEP____/Cameras/P5D" }
+    ];
+
+    constructor(props: CameraSelectorProps) {
+        super(props);
+        this.state = {
+            selectedCamera: props.selectedCamera || this.cameras[0].path
+        };
+    }
+
+    componentDidUpdate(prevProps: CameraSelectorProps) {
+        if (prevProps.selectedCamera !== this.props.selectedCamera) {
+            this.setState({ selectedCamera: this.props.selectedCamera });
+        }
+    }
+
+    handleCameraChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedPath = event.target.value;
+        this.setState({ selectedCamera: selectedPath });
+        
+        if (selectedPath === "") {
+            // Free camera mode - send special message
+            this.props.onCameraSelect("FREE_CAMERA");
+        } else {
+            // Fixed camera mode
+            this.props.onCameraSelect(selectedPath);
+        }
+    };
+
+    render() {
+        if (!this.props.visible) return null;
+
+        return (
+            <div className="camera-selector-container" style={{ 
+                position: 'absolute', 
+                top: '10px', 
+                right: '320px', 
+                zIndex: 1000,
+                backgroundColor: 'rgba(0,0,0,0.8)',
+                padding: '10px',
+                borderRadius: '5px'
+            }}>
+                <label style={{ color: 'white', marginRight: '10px' }}>Camera View:</label>
+                <select 
+                    className="nvidia-dropdown"
+                    value={this.state.selectedCamera}
+                    onChange={this.handleCameraChange}
+                >
+                    {this.cameras.map(camera => (
+                        <option key={camera.path || "free"} value={camera.path}>
+                            {camera.name}
+                        </option>
+                    ))}
+                </select>
+            </div>
+        );
+    }
 }
 
 export default class App extends React.Component<AppProps, AppState> {
@@ -83,16 +141,14 @@ export default class App extends React.Component<AppProps, AppState> {
     constructor(props: AppProps) {
         super(props);
         
+        // list of selectable USD assets - UPDATED WITH MEP_SCHNEIDER
         const usdAssets: USDAssetType[] = StreamConfig.source === "stream"? [
-            {name: "MEP_Schneider", url: "C:/web-viewer-sample/public/samples/MEP_Schneider/MEP_Schneider/MEP_Schneider.usd"},
-            {name: "Sample 1", url:"${omni.usd_viewer.samples}/samples_data/stage01.usd"},
-            {name: "Sample 2", url:"${omni.usd_viewer.samples}/samples_data/stage02.usd"},
+
+            {name: "MEP_Schneider", url: "C:/web-viewer-sample/public/samples/MEP_Schneider/MEP_Schneider/MEP_Schneider.usd"}
         ]
         :
         [
-            {name: "MEP_Schneider", url: "C:/web-viewer-sample/public/samples/MEP_Schneider/MEP_Schneider/MEP_Schneider.usd"},
-            {name: "Sample 1", url:"./samples/stage01.usd"},
-            {name: "Sample 2", url:"./samples/stage02.usd"},
+            {name: "MEP_Schneider", url: "./samples/MEP_Schneider/MEP_Schneider/MEP_Schneider.usd"}
         ];
 
         this.state = {
@@ -105,199 +161,7 @@ export default class App extends React.Component<AppProps, AppState> {
             showUI: false,
             loadingText: StreamConfig.source === "gfn" ? "Log in to GeForce NOW to view stream" : (StreamConfig.source === "stream" ? "Waiting for stream to initialize":  "Waiting for stream to begin"),
             isLoading: StreamConfig.source === "stream" ? true : false,
-            // PI Data state
-            piData: {
-                values: [],
-                isLoading: false,
-                error: null,
-                lastUpdated: null
-            },
-            showPiPanel: false,
-            selectedObjectPath: ""
-        }
-    }
-
-    /**
-     * PI Web API Configuration
-     */
-    private readonly PI_CONFIG = {
-    // Using local proxy server to avoid CORS issues
-    attributesUrl: "http://localhost:3001/api/pi/attributes",
-    valueUrlBase: "http://localhost:3001/api/pi/value/"
-};
-
-    /**
-     * Mapping of PI attribute names to display information
-     */
-    private readonly PI_ATTRIBUTE_MAP = {
-        "temperature": { label: "Temp 01", unit: "°C" },
-        "TemperatureSetpoint": { label: "Temp 02", unit: "°C" },
-        "PowerUsage": { label: "Temp 03", unit: "°C" },
-        "Current": { label: "Temp 04", unit: "°C" },
-        "internalCalculOutput": { label: "Temp 05", unit: "" },
-        "temp_06": { label: "Temp 06", unit: "°C" },
-        "temp_07": { label: "Temp 07", unit: "°C" },
-        "temp_08": { label: "Temp 08", unit: "°C" },
-        "temp_09": { label: "Temp 09", unit: "°C" },
-        "temp_10": { label: "Temp 10", unit: "°C" },
-        "temp_11": { label: "Temp 11", unit: "°C" }
-    };
-
-    /**
-     * Fetch PI data from the PI Web API via proxy server
-     */
-    private async _fetchPIData(): Promise<void> {
-        console.log('*** FETCHING REAL PI DATA VIA PROXY ***');
-        
-        this.setState(prevState => ({
-            piData: {
-                ...prevState.piData,
-                isLoading: true,
-                error: null
-            }
-        }));
-
-        try {
-            console.log('Making request to proxy server:', this.PI_CONFIG.attributesUrl);
-            
-            // Fetch attributes from proxy server
-            const attributesResponse = await fetch(this.PI_CONFIG.attributesUrl, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            if (!attributesResponse.ok) {
-                throw new Error(`Proxy server error: ${attributesResponse.status} ${attributesResponse.statusText}`);
-            }
-
-            const attributesData = await attributesResponse.json();
-            console.log('PI Attributes received from proxy:', attributesData);
-            
-            const attributes = attributesData.Items || [];
-
-            // Create a map of attribute names to WebIds
-            const attributeMap = attributes.reduce((map: any, attr: any) => {
-                map[attr.Name] = attr.WebId;
-                return map;
-            }, {});
-
-            console.log('Available PI attributes:', Object.keys(attributeMap));
-
-            // Fetch values for each attribute we're interested in
-            const piValues: PIDataValue[] = [];
-            const timestamp = new Date().toLocaleString();
-
-            for (const [attrName, config] of Object.entries(this.PI_ATTRIBUTE_MAP)) {
-                if (attributeMap[attrName]) {
-                    try {
-                        console.log(`Fetching value for ${attrName} via proxy...`);
-                        const valueResponse = await fetch(
-                            `${this.PI_CONFIG.valueUrlBase}${encodeURIComponent(attributeMap[attrName])}`,
-                            {
-                                method: 'GET',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                }
-                            }
-                        );
-
-                        if (valueResponse.ok) {
-                            const valueData = await valueResponse.json();
-                            console.log(`${attrName} value from proxy:`, valueData);
-                            
-                            piValues.push({
-                                name: config.label,
-                                value: typeof valueData.Value === 'number' ? 
-                                       Math.round(valueData.Value * 100) / 100 : 
-                                       valueData.Value,
-                                unit: config.unit,
-                                timestamp: valueData.Timestamp || timestamp
-                            });
-                        } else {
-                            console.warn(`Failed to fetch value for ${attrName}: ${valueResponse.status}`);
-                            piValues.push({
-                                name: config.label,
-                                value: "Error",
-                                unit: config.unit,
-                                timestamp: timestamp
-                            });
-                        }
-                    } catch (error) {
-                        console.error(`Error fetching value for ${attrName}:`, error);
-                        piValues.push({
-                            name: config.label,
-                            value: "N/A",
-                            unit: config.unit,
-                            timestamp: timestamp
-                        });
-                    }
-                } else {
-                    console.warn(`Attribute ${attrName} not found in PI system`);
-                    piValues.push({
-                        name: config.label,
-                        value: "Not Found",
-                        unit: config.unit,
-                        timestamp: timestamp
-                    });
-                }
-            }
-
-            console.log('*** REAL PI DATA FETCHED VIA PROXY ***', piValues);
-
-            this.setState(prevState => ({
-                piData: {
-                    values: piValues,
-                    isLoading: false,
-                    error: null,
-                    lastUpdated: timestamp
-                }
-            }));
-
-        } catch (error) {
-            console.error('PI Data fetch error via proxy:', error);
-            
-            // Create fallback test data if real data fails
-            const piValues: PIDataValue[] = [];
-            const timestamp = new Date().toLocaleString();
-
-            for (const [attrName, config] of Object.entries(this.PI_ATTRIBUTE_MAP)) {
-                piValues.push({
-                    name: config.label,
-                    value: "Connection Failed",
-                    unit: config.unit,
-                    timestamp: timestamp
-                });
-            }
-
-            this.setState(prevState => ({
-                piData: {
-                    values: piValues,
-                    isLoading: false,
-                    error: `Failed to connect to PI Web API via proxy: ${error instanceof Error ? error.message : 'Unknown error'}`,
-                    lastUpdated: timestamp
-                }
-            }));
-        }
-    }
-
-    /**
-     * Handle closing the PI data panel
-     */
-    private _closePIPanel = (): void => {
-        this.setState({ 
-            showPiPanel: false,
-            selectedObjectPath: ""
-        });
-    }
-
-    /**
-     * Handle refresh PI data
-     */
-    private _refreshPIData = (): void => {
-        if (this.state.showPiPanel) {
-            this._fetchPIData();
+            selectedCamera: "" // UPDATED: Start with free camera mode
         }
     }
 
@@ -443,14 +307,58 @@ export default class App extends React.Component<AppProps, AppState> {
     }
 
     /**
+     * @function _switchCamera
+     * 
+     * UPDATED: Send a request to switch to a specific camera view or free camera
+     */
+    private _switchCamera(cameraPath: string): void {
+        console.log(`Switching to camera: ${cameraPath}`);
+        this.setState({ selectedCamera: cameraPath === "FREE_CAMERA" ? "" : cameraPath });
+        const message: AppStreamMessageType = {
+            event_type: "switchCameraRequest",
+            payload: {
+                camera_path: cameraPath
+            }
+        };
+        AppStream.sendMessage(JSON.stringify(message));
+    }
+
+    /**
+     * @function _isMEPSchneiderAsset
+     * 
+     * Check if the currently selected asset is the MEP_Schneider file
+     */
+    private _isMEPSchneiderAsset(): boolean {
+        return this.state.selectedUSDAsset?.name === "MEP_Schneider";
+    }
+
+    /**
     * @function _onSelectUSDPrims
     *
     * React to user selecting items in the USDStage list.
-    * Sends a request to change the selection in the USD Stage.
+    * For MEP_Schneider, handle camera switching when cameras are selected.
     */
     private _onSelectUSDPrims (selectedUsdPrims: Set<USDPrimType>): void {
-        console.log(`Sending request to select: ${selectedUsdPrims}.`);
+        console.log(`Sending request to select: ${Array.from(selectedUsdPrims).map(p => p.path)}`);
         this.setState({ selectedUSDPrims: selectedUsdPrims });
+        
+        // Check if this is MEP_Schneider and if a camera was selected
+        if (this._isMEPSchneiderAsset() && selectedUsdPrims.size === 1) {
+            const selectedPrim = Array.from(selectedUsdPrims)[0];
+            const cameraNames = ['P5A', 'P5B', 'P5C', 'P5D'];
+            
+            // Check if the selected prim is one of our cameras
+            if (cameraNames.some(name => selectedPrim.path.includes(name))) {
+                // Extract camera name and switch to it
+                const cameraName = cameraNames.find(name => selectedPrim.path.includes(name));
+                if (cameraName) {
+                    this._switchCamera(`/World/MEP____/Cameras/${cameraName}`);
+                    return; // Don't send the regular selection message for cameras
+                }
+            }
+        }
+        
+        // Regular selection logic for non-camera prims
         const paths: string[] = Array.from(selectedUsdPrims).map(obj => obj.path);
         const message: AppStreamMessageType = {
             event_type: "selectPrimsRequest",
@@ -594,36 +502,16 @@ export default class App extends React.Component<AppProps, AppState> {
             
         // Notification from Kit about user changing the selection via the viewport.
         else if (event.event_type === "stageSelectionChanged") {
-            console.log('Selection changed:', event.payload.prims);
-            
+            console.log(event.payload.prims.constructor.name);
             if (!Array.isArray(event.payload.prims) || event.payload.prims.length === 0) {
                 console.log('Kit App communicates an empty stage selection.');
-                this.setState({ 
-                    selectedUSDPrims: new Set<USDPrimType>(),
-                    showPiPanel: false,
-                    selectedObjectPath: ""
-                });
+                this.setState({ selectedUSDPrims: new Set<USDPrimType>() });
             }
             else {
-                console.log('Kit App communicates selection of objects:', event.payload.prims);
-                const selectedPath = event.payload.prims[0]; // Get first selected object path
-                
-                // DEBUG: Log all clicked paths to find the door
-                console.log('*** CLICKED OBJECT PATH: ***', selectedPath);
-                console.log('*** LOOKING FOR: /World/P5D_panel/Shell/Geometry/P5D_0/Door ***');
-                
-                // TEST: Show PI panel for ANY clicked object
-                console.log('*** OBJECT CLICKED! Showing PI data panel... ***');
-                this.setState({ 
-                    selectedObjectPath: selectedPath,
-                    showPiPanel: true
-                });
-                this._fetchPIData();
-                
-                // Update the normal USD selection UI
+                console.log('Kit App communicates selection of a USDPrimType: ' + event.payload.prims.map((obj: any) => obj).join(', '));
                 const usdPrimsToSelect: Set<USDPrimType> = new Set<USDPrimType>();
-                event.payload.prims.forEach((objPath: string) => {
-                    const result = this._findUSDPrimByPath(objPath);
+                event.payload.prims.forEach((obj: any) => {
+                    const result = this._findUSDPrimByPath(obj);
                     if (result !== null) {
                         usdPrimsToSelect.add(result);
                     }
@@ -646,6 +534,20 @@ export default class App extends React.Component<AppProps, AppState> {
             }
             if (Array.isArray(children)){
                 this._makePickable(children);
+            }
+        }
+        // Camera switching response - UPDATED
+        else if (event.event_type === "switchCameraResponse") {
+            if (event.payload.result === "success") {
+                console.log(`Successfully switched to camera: ${event.payload.camera_path}`);
+                // Update UI state to reflect camera change
+                if (event.payload.camera_path === "FREE_CAMERA") {
+                    this.setState({ selectedCamera: "" });
+                } else {
+                    this.setState({ selectedCamera: event.payload.camera_path });
+                }
+            } else {
+                console.error(`Failed to switch camera: ${event.payload.error}`);
             }
         }
         // other messages from app to kit
@@ -674,9 +576,8 @@ export default class App extends React.Component<AppProps, AppState> {
     }
     
     render() {
+
         const sidebarWidth = 300;
-        const piPanelWidth = 350;
-        
         return (
             <div
                 style={{
@@ -689,7 +590,7 @@ export default class App extends React.Component<AppProps, AppState> {
                 <div style={{
                             position: 'absolute',
                             height: `calc(100% - ${headerHeight}px)`,
-                            width: `calc(100% - ${sidebarWidth}px - ${this.state.showPiPanel ? piPanelWidth : 0}px)`
+                            width: `calc(100% - ${sidebarWidth}px)`
                 }}>
                     
                 {/* Loading text indicator */}
@@ -699,6 +600,15 @@ export default class App extends React.Component<AppProps, AppState> {
                         <div className="spinner-border" role="status" style={{ marginTop: 10, visibility: this.state.isLoading? 'visible': 'hidden' }} />
                     </div>
                 }
+
+                {/* Camera Selector for MEP_Schneider - UPDATED */}
+                {this._isMEPSchneiderAsset() && this.state.showUI && (
+                    <CameraSelector
+                        visible={this.state.showStream}
+                        onCameraSelect={(cameraPath) => this._switchCamera(cameraPath)}
+                        selectedCamera={this.state.selectedCamera}
+                    />
+                )}
 
                 {/* Streamed app */}
                 <AppStream
@@ -724,6 +634,7 @@ export default class App extends React.Component<AppProps, AppState> {
 
                 {this.state.showUI &&
                 <>
+                        
                     {/* USD Asset Selector */}
                     <USDAsset
                         usdAssets={this.state.usdAssets}
@@ -741,19 +652,8 @@ export default class App extends React.Component<AppProps, AppState> {
                         fillUSDPrim={(value) => this._onFillUSDPrim(value)}
                         onReset={() => this._onStageReset()}
                         />
-                </>
+                    </>
                 }
-
-                {/* PI Data Panel */}
-                {this.state.showPiPanel && (
-                    <PIDataPanel
-                        width={piPanelWidth}
-                        piData={this.state.piData}
-                        onClose={this._closePIPanel}
-                        onRefresh={this._refreshPIData}
-                        selectedObjectPath={this.state.selectedObjectPath}
-                    />
-                )}
             </div>
             );
         }

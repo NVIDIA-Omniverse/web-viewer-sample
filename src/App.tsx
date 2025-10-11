@@ -22,7 +22,7 @@ import "./App.css";
 import Window from './Window';
 import StreamOnlyWindow from './StreamOnlyWindow';
 import { Application, AppOnlyForm, ServerURLsForm, ApplicationsForm, VersionsForm, ProfilesForm } from "./Forms"
-import LogoImage from './assets/nvidia_logo.png';
+import LogoImage from './assets/schneider_logo.jpg';
 import StreamConfig from '../stream.config.json';
 import {
     getStreamingSessionInfo,
@@ -262,7 +262,7 @@ class App extends Component<{}, AppState>{
             {/* Header */}
             <div className="header-bar">
                 <img src={LogoImage} alt="Logo" className="header-logo" />
-                    <span className="header-title">Omniverse Embedded Web Viewer Example</span>
+                    <span className="header-title">Schneider Electric</span>
                 </div>
 
             { /* End Stream button */}

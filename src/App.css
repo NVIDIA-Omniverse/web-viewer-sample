@@ -52,7 +52,7 @@ body {
     padding-top: 25px;
     width: 100%;
     background-color: rgba(255, 255, 255);
-    color: #76b900; /* NVIDIA green */
+    color: #3DCD58; /* NVIDIA green */
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -64,10 +64,10 @@ body {
     font-size: 14px;
     margin-top: 6px; /* Space above the button */
     padding: 4px 8px; /* Padding inside the button */
-    background-color: #76b900; /* NVIDIA green */
+    background-color: #3DCD58; /* NVIDIA green */
     color: white; /* Text color */
     border: solid;
-    border-color: #76b900;
+    border-color: #3DCD58;
     border-width: 2px;
     cursor: pointer; /* Pointer cursor on hover */
 }
@@ -75,12 +75,12 @@ body {
 .nvidia-button:hover {
     background-color: #ffffff; /* Darker green on hover */
     color: black;
-    border-color: #76b900;
+    border-color: #3DCD58;
 }
 
 .nvidia-dropdown {
     width: 100%;
-    background-color: #76b900; /* NVIDIA green */
+    background-color: #3DCD58; /* NVIDIA green */
     color: #ffffff; /* White text */
     font-size: 16px; /* Adjust font size as needed */
     border: none;
@@ -98,17 +98,17 @@ body {
 }
 
 .form-check-input:checked {
-    background-color: #76b900; /* NVIDIA green */
-    border-color: #76b900; /* NVIDIA green */
+    background-color: #3DCD58; /* NVIDIA green */
+    border-color: #3DCD58; /* NVIDIA green */
   }
   
 .form-check-input:focus, .form-check-input:focus-visible {
     outline: none; /* Remove the default outline */
-    box-shadow: 0 0 0 0.2rem rgba(118, 185, 0, 0.5); /* Custom green focus shadow */
+    box-shadow: 0 0 0 0.2rem rgba(61, 205, 88, 0.5); /* Custom green focus shadow */
   }
 
 .form-control:focus {
     outline: none;
-    box-shadow: 0 0 0 0.25rem rgba(118, 185, 0, 0.5); /* Custom green focus */
-    border-color: #76b900;
+    box-shadow: 0 0 0 0.25rem rgba(61, 205, 88, 0.5); /* Custom green focus */
+    border-color: #3DCD58;
 }
