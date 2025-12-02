@@ -1,22 +1,21 @@
 {
-    "$comment": "source can be 'gfn', 'local' or 'stream'",
-    "source": "local",
-    "stream":
-    {
-        "$comment": "Optional props if source is set to 'stream'.",
-        "appServer": "",
-        "streamServer": ""
-    },
-    "gfn": {
-        "$comment": "Required props if source is set to 'gfn'.",
-        "catalogClientId": "",
-        "clientId": "",
-        "cmsId": 0
-    },
-    "local": {
-        "$comment": "Required props if source is set to 'local'.",
-        "server": "127.0.0.1",
-        "signalingPort": 49100,
-        "mediaPort": null
-    }
+  "$comment": "source can be 'gfn', 'local' or 'stream'",
+  "source": "local",
+  "stream": {
+    "$comment": "Optional props if source is set to 'stream'.",
+    "appServer": "",
+    "streamServer": ""
+  },
+  "gfn": {
+    "$comment": "Required props if source is set to 'gfn'.",
+    "catalogClientId": "",
+    "clientId": "",
+    "cmsId": 0
+  },
+  "local": {
+    "$comment": "Required props if source is set to 'local'.",
+    "server": "127.0.0.1",
+    "signalingPort": 49100,
+    "mediaPort": null
+  }
 }

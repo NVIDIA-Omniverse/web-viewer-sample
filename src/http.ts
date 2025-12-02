@@ -22,13 +22,16 @@ export class Http {
     return { status: response.status, data: data as T };
   }
 
-  static async post<T, R>(url: string, payload: T): Promise<{ status: number; data: R }> {
+  static async post<T, R>(
+    url: string,
+    payload: T,
+  ): Promise<{ status: number; data: R }> {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
     const response = await fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers,
       body: JSON.stringify(payload),
     });
@@ -36,13 +39,16 @@ export class Http {
     return { status: response.status, data: data as R };
   }
 
-  static async del<T>(url: string, payload: T): Promise<{ status: number } | { detail: string; status: number }> {
+  static async del<T>(
+    url: string,
+    payload: T,
+  ): Promise<{ status: number } | { detail: string; status: number }> {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
     const response = await fetch(url, {
-      method: 'DELETE',
+      method: "DELETE",
       headers,
       body: JSON.stringify(payload),
     });

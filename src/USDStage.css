@@ -10,94 +10,96 @@
  * its affiliates is strictly prohibited.
  */
 .usdStageContainer {
-    position: absolute;
-    top: 105px;
-    right: 0;
-    height: calc(100% - 185px);
-    background-color: #FEFEFE;
-    color: #656565;
-    text-align: left;
-    overflow: hidden; /* Ensures no overflow outside this container */
+  position: absolute;
+  top: 105px;
+  right: 0;
+  height: calc(100% - 185px);
+  background-color: #fefefe;
+  color: #656565;
+  text-align: left;
+  overflow: hidden; /* Ensures no overflow outside this container */
 }
 
 .usdStageHeader {
-    margin-left: 30px;
-    margin-right: 30px;
-    margin-top: 15px;
-    font-size: 25px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+  margin-left: 30px;
+  margin-right: 30px;
+  margin-top: 15px;
+  font-size: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .list-container {
-    max-height: calc(100% - 60px); /* Adjust based on header and any other UI elements */
-    overflow-y: auto; /* Enables vertical scrolling */
-    scrollbar-color: #76b900 #e0e0e0; /* For Firefox, thumb and track colors */
-    padding-inline-start: 30px;
-    padding-right: 30px;
+  max-height: calc(
+    100% - 60px
+  ); /* Adjust based on header and any other UI elements */
+  overflow-y: auto; /* Enables vertical scrolling */
+  scrollbar-color: #76b900 #e0e0e0; /* For Firefox, thumb and track colors */
+  padding-inline-start: 30px;
+  padding-right: 30px;
 }
 
 .list-container::-webkit-scrollbar {
-    width: 8px; /* Width of the scrollbar */
+  width: 8px; /* Width of the scrollbar */
 }
 
 .list-container::-webkit-scrollbar-track {
-    background: #e0e0e0; /* Light grey background */
+  background: #e0e0e0; /* Light grey background */
 }
 
 .list-container::-webkit-scrollbar-thumb {
-    background-color: #76b900; /* NVIDIA green */
-    border-radius: 10px; /* Rounded corners on the scrollbar thumb */
-    border: 2px solid #e0e0e0; /* Optional: adds a border around the thumb */
+  background-color: #76b900; /* NVIDIA green */
+  border-radius: 10px; /* Rounded corners on the scrollbar thumb */
+  border: 2px solid #e0e0e0; /* Optional: adds a border around the thumb */
 }
 
 .list-container::-webkit-scrollbar-button {
-    display: none; /* Hides the default buttons, optional */
+  display: none; /* Hides the default buttons, optional */
 }
 
 .list-item {
-    cursor: pointer;
-    color: #000000;
-    list-style-type: none; /* Custom style or none */
-    padding-right: 0px; /* Add padding to ensure right alignment */
+  cursor: pointer;
+  color: #000000;
+  list-style-type: none; /* Custom style or none */
+  padding-right: 0px; /* Add padding to ensure right alignment */
 }
 
 .list-item.parent::before {
-    float: left;
-    display: inline-block;
-    vertical-align: middle;
+  float: left;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .nested-list {
-    padding-left: 20px; /* Indentation for child lists */
-    margin: 0; /* Remove any default margins */
-    padding-right: 0; /* Ensure padding is consistent on right */
+  padding-left: 20px; /* Indentation for child lists */
+  margin: 0; /* Remove any default margins */
+  padding-right: 0; /* Ensure padding is consistent on right */
 }
 
 .item-content {
-    padding: 5px 0px 5px 5px;
-    line-height: 1; /* Adjust line height as needed */
-    display: flex;
-    align-items: center;
+  padding: 5px 0px 5px 5px;
+  line-height: 1; /* Adjust line height as needed */
+  display: flex;
+  align-items: center;
 }
 
 .item-content.selected {
-    background-color: #76b900; /* NVIDIA green */
-    color: #ffffff; /* White text color */
+  background-color: #76b900; /* NVIDIA green */
+  color: #ffffff; /* White text color */
 }
 
 .expand-toggle {
-    cursor: pointer;
-    padding-right: 8px;  /* Provides space to click */
-    user-select: none;  /* Prevents text selection on click */
-    display: inline-block;  /* Ensures alignment with text */
+  cursor: pointer;
+  padding-right: 8px; /* Provides space to click */
+  user-select: none; /* Prevents text selection on click */
+  display: inline-block; /* Ensures alignment with text */
 }
 
 .expand-toggle.deselected {
-    color: #76b900;
+  color: #76b900;
 }
 
 .expand-toggle.selected {
-    color: #FFFFFF;
+  color: #ffffff;
 }

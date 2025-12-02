@@ -10,24 +10,24 @@
  * its affiliates is strictly prohibited.
  */
 #main-div {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;  /* Ensures that child elements are not centered */
-    justify-content: flex-start;  /* Aligns children to the top of the container */
-    width: 100%;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* Ensures that child elements are not centered */
+  justify-content: flex-start; /* Aligns children to the top of the container */
+  width: 100%;
+  height: 100%;
 }
 
 #remote-video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
 }
 
 #streamonly-wrapper {
-    position: relative;
-    width: 100vw;
-    overflow-y: hidden;
+  position: relative;
+  width: 100vw;
+  overflow-y: hidden;
 }

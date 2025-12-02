@@ -79,10 +79,13 @@ export async function getApplications(appServer: string) {
   const endpoint = `${appServer}/cfg/apps`;
   const response = await Http.get<ApplicationResponse>(endpoint);
 
-  const applications = response.data.items.reduce((lookup: { [key: string]: ApplicationItem }, application) => {
-    lookup[application.id] = application;
-    return lookup;
-  }, {});
+  const applications = response.data.items.reduce(
+    (lookup: { [key: string]: ApplicationItem }, application) => {
+      lookup[application.id] = application;
+      return lookup;
+    },
+    {},
+  );
 
   return { status: response.status, data: applications };
 }
@@ -95,16 +98,23 @@ export async function getApplicationVersions(appServer: string, appId: string) {
     status: response.status,
     data: {
       appId,
-      versions: response.data.items.map((item) => item.version)
-    }
+      versions: response.data.items.map((item) => item.version),
+    },
   };
 }
 
-export async function getApplicationVersionProfiles(appServer: string, appId: string, appVersion: string) {
+export async function getApplicationVersionProfiles(
+  appServer: string,
+  appId: string,
+  appVersion: string,
+) {
   const endpoint = `${appServer}/cfg/apps/${appId}/versions/${appVersion}/profiles`;
   const response = await Http.get<ApplicationProfileResponse>(endpoint);
 
-  return { status: response.status, data: { appId, appVersion, profiles: response.data.items } };
+  return {
+    status: response.status,
+    data: { appId, appVersion, profiles: response.data.items },
+  };
 }
 
 export async function getStreamingSessions(streamServer: string) {
@@ -114,29 +124,43 @@ export async function getStreamingSessions(streamServer: string) {
   return response;
 }
 
-export async function getStreamingSessionInfo(streamServer: string, sessionId: string) {
+export async function getStreamingSessionInfo(
+  streamServer: string,
+  sessionId: string,
+) {
   const endpoint = `${streamServer}/streaming/stream/${sessionId}`;
   const response = await Http.get<StreamItem>(endpoint);
 
   return response;
 }
 
-export async function createStreamingSession(streamServer: string, appId: string, appVersion: string, profile: string) {
+export async function createStreamingSession(
+  streamServer: string,
+  appId: string,
+  appVersion: string,
+  profile: string,
+) {
   const endpoint = `${streamServer}/streaming/stream`;
 
   const payload = {
-    "id": appId,
-    "version": appVersion,
-    "profile": profile
+    id: appId,
+    version: appVersion,
+    profile: profile,
   };
 
-  const response = await Http.post<typeof payload, StreamItem | ErrorItem>(endpoint, payload);
+  const response = await Http.post<typeof payload, StreamItem | ErrorItem>(
+    endpoint,
+    payload,
+  );
   return response;
 }
 
-export async function destroyStreamingSession(streamServer: string, sessionId: string) {
+export async function destroyStreamingSession(
+  streamServer: string,
+  sessionId: string,
+) {
   const endpoint = `${streamServer}/streaming/stream`;
-  const payload = { "id": sessionId };
+  const payload = { id: sessionId };
 
   const response = await Http.del(endpoint, payload);
   return response;
