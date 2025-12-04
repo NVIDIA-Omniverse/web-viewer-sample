@@ -80,10 +80,16 @@ interface AppState {
 }
 
 class App extends Component<{}, AppState> {
+  private _getDefaultForm(): Forms {
+    return StreamConfig.source === "stream"
+      ? Forms.StreamURLs
+      : Forms.Stream;
+  }
+
   constructor(props: {}) {
     super(props);
     this.state = {
-      currentForm: Forms.AppOnly,
+      currentForm: this._getDefaultForm(),
       useWebUI: true,
       streamServer: StreamConfig.stream.streamServer,
       appServer: StreamConfig.stream.appServer,
@@ -112,7 +118,7 @@ class App extends Component<{}, AppState> {
    */
   private _resetState() {
     this.setState({
-      currentForm: Forms.AppOnly,
+      currentForm: this._getDefaultForm(),
       useWebUI: true,
       streamServer: StreamConfig.stream.streamServer,
       appServer: StreamConfig.stream.appServer,
