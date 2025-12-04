@@ -16,6 +16,7 @@ import StreamConfig from "../stream.config.json";
 import USDAsset from "./USDAsset";
 import USDStage from "./USDStage";
 import { headerHeight } from "./App";
+import ExampleLineChart from "./components/charts/ExampleLineChart";
 
 interface USDAssetType {
   name: string;
@@ -500,8 +501,15 @@ export default class App extends React.Component<AppProps, AppState> {
             height: `calc(100% - ${headerHeight}px)`,
             width: `${leftSpacerWidth}px`,
             backgroundColor: "#ffffff",
+            borderRight: "1px solid #e0e0e0",
+            padding: "20px",
+            boxSizing: "border-box",
           }}
-        />
+        >
+          <div style={{ height: "calc(100% - 40px)" }}>
+            <ExampleLineChart />
+          </div>
+        </div>
         <div
           style={{
             position: "absolute",
