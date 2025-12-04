@@ -483,6 +483,7 @@ export default class App extends React.Component<AppProps, AppState> {
 
   render() {
     const sidebarWidth = 300;
+    const leftSpacerWidth = 500; // 最左邊區塊: 用來放 charts
     return (
       <div
         style={{
@@ -495,8 +496,18 @@ export default class App extends React.Component<AppProps, AppState> {
         <div
           style={{
             position: "absolute",
+            left: 0,
             height: `calc(100% - ${headerHeight}px)`,
-            width: `calc(100% - ${sidebarWidth}px)`,
+            width: `${leftSpacerWidth}px`,
+            backgroundColor: "#ffffff",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            left: leftSpacerWidth,
+            height: `calc(100% - ${headerHeight}px)`,
+            width: `calc(100% - ${sidebarWidth + leftSpacerWidth}px)`,
           }}
         >
           {/* Loading text indicator */}
