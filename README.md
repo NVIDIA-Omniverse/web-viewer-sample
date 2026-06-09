@@ -8,6 +8,10 @@ For new and future work, use the [Create OV WebRTC sample](https://docs.omnivers
 
 Rather than cloning one fixed sample, the Create OV WebRTC sample scaffolds a fresh, ready-to-run web streaming client on demand with `npx`. It tracks a pinned, versioned NVIDIA Web Streaming Library, supports local, Omniverse Kit App Streaming (OKAS), and NVCF cloud streaming backends, and lets you generate a TypeScript-only or React project.
 
+---
+
+<br/>
+
 <p align="center">
   <img src="readme-assets/sample.png" width=100% />
 </p>
