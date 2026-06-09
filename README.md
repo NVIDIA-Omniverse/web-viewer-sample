@@ -1,5 +1,17 @@
 # Omniverse Web Viewer Sample Application
 
+## :warning: Deprecation Notice
+
+**This repository is no longer actively developed or updated, and is kept for reference only.**
+
+For new and future work, use the [Create OV WebRTC sample](https://docs.omniverse.nvidia.com/ov-web-sdk/latest/web-sample/overview.html) in the OV Web SDK. It is the actively maintained replacement for this sample.
+
+Rather than cloning one fixed sample, the Create OV WebRTC sample scaffolds a fresh, ready-to-run web streaming client on demand with `npx`. It tracks a pinned, versioned NVIDIA Web Streaming Library, supports local, Omniverse Kit App Streaming (OKAS), and NVCF cloud streaming backends, and lets you generate a TypeScript-only or React project.
+
+---
+
+<br/>
+
 <p align="center">
   <img src="readme-assets/sample.png" width=100% />
 </p>
